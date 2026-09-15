@@ -1,0 +1,398 @@
+[
+ {
+  "id": "d01",
+  "file": "사업자등록증.pdf",
+  "client": "한빛나루식당",
+  "client_short": "한빛나루",
+  "category": "기본서류",
+  "doc_type": "사업자등록증",
+  "period": {
+   "cycle": "PERMANENT",
+   "normalized": "PERMANENT"
+  },
+  "format": "pdf",
+  "scanned": true,
+  "ocr_kind": "scan",
+  "note": "스캔본",
+  "target_path": "한빛나루식당/00_기본서류/한빛나루식당_사업자등록증.pdf",
+  "chars": 310
+ },
+ {
+  "id": "d02",
+  "file": "KakaoTalk_20260305_101522.jpg",
+  "client": "대성정밀공업사",
+  "client_short": "대성정밀",
+  "category": "기본서류",
+  "doc_type": "사업자등록증",
+  "period": {
+   "cycle": "PERMANENT",
+   "normalized": "PERMANENT"
+  },
+  "format": "jpg",
+  "scanned": true,
+  "ocr_kind": "jpg",
+  "note": "카톡 사진",
+  "target_path": "대성정밀공업사/00_기본서류/대성정밀공업사_사업자등록증.jpg",
+  "chars": 264
+ },
+ {
+  "id": "d03",
+  "file": "스캔001.pdf",
+  "client": "주식회사 모모스토어",
+  "client_short": "모모스토어",
+  "category": "기본서류",
+  "doc_type": "임대차계약서",
+  "period": {
+   "cycle": "PERMANENT",
+   "normalized": "PERMANENT"
+  },
+  "format": "pdf",
+  "scanned": true,
+  "ocr_kind": "scan",
+  "note": "스캔본",
+  "target_path": "주식회사 모모스토어/00_기본서류/주식회사 모모스토어_임대차계약서.pdf",
+  "chars": 614
+ },
+ {
+  "id": "d04",
+  "file": "임대차계약서(수정본).docx",
+  "client": "푸른솔외국어학원",
+  "client_short": "푸른솔",
+  "category": "기본서류",
+  "doc_type": "임대차계약서",
+  "period": {
+   "cycle": "PERMANENT",
+   "normalized": "PERMANENT"
+  },
+  "format": "docx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "푸른솔외국어학원/00_기본서류/푸른솔외국어학원_임대차계약서.docx",
+  "chars": 434
+ },
+ {
+  "id": "d05",
+  "file": "거래내역조회_20260901.xlsx",
+  "client": "세진건재상사",
+  "client_short": "세진건재",
+  "category": "정기증빙",
+  "doc_type": "통장내역",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-08"
+  },
+  "format": "xlsx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "세진건재상사/2026/02_통장_증빙/세진건재상사_2026-08_통장내역.xlsx",
+  "chars": 796
+ },
+ {
+  "id": "d06",
+  "file": "가상은행_거래내역.xlsx",
+  "client": "한빛나루식당",
+  "client_short": "한빛나루",
+  "category": "정기증빙",
+  "doc_type": "통장내역",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-05"
+  },
+  "format": "xlsx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "본문 약칭",
+  "target_path": "한빛나루식당/2026/02_통장_증빙/한빛나루식당_2026-05_통장내역.xlsx",
+  "chars": 1127
+ },
+ {
+  "id": "d07",
+  "file": "급여 3월 최종(2).xlsx",
+  "client": "대성정밀공업사",
+  "client_short": "대성정밀",
+  "category": "정기증빙",
+  "doc_type": "급여대장",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-04"
+  },
+  "format": "xlsx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "파일명 3월·본문 4월 — 정답은 본문 · 약칭",
+  "target_path": "대성정밀공업사/2026/01_원천세_급여/대성정밀공업사_2026-04_급여대장.xlsx",
+  "chars": 492
+ },
+ {
+  "id": "d08",
+  "file": "7월 급여.pdf",
+  "client": "주식회사 모모스토어",
+  "client_short": "모모스토어",
+  "category": "정기증빙",
+  "doc_type": "급여대장",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-07"
+  },
+  "format": "pdf",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "주식회사 모모스토어/2026/01_원천세_급여/주식회사 모모스토어_2026-07_급여대장.pdf",
+  "chars": 546
+ },
+ {
+  "id": "d09",
+  "file": "스캔002.pdf",
+  "client": "푸른솔외국어학원",
+  "client_short": "푸른솔",
+  "category": "정기증빙",
+  "doc_type": "근로계약서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-03"
+  },
+  "format": "pdf",
+  "scanned": true,
+  "ocr_kind": "scan",
+  "note": "서명 스캔본",
+  "target_path": "푸른솔외국어학원/2026/01_원천세_급여/푸른솔외국어학원_2026-03_근로계약서.pdf",
+  "chars": 676
+ },
+ {
+  "id": "d10",
+  "file": "근로계약서_정하늘.docx",
+  "client": "세진건재상사",
+  "client_short": "세진건재",
+  "category": "정기증빙",
+  "doc_type": "근로계약서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-02"
+  },
+  "format": "docx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "세진건재상사/2026/01_원천세_급여/세진건재상사_2026-02_근로계약서.docx",
+  "chars": 527
+ },
+ {
+  "id": "d11",
+  "file": "KakaoTalk_20260212_183012.jpg",
+  "client": "한빛나루식당",
+  "client_short": "한빛나루",
+  "category": "정기증빙",
+  "doc_type": "종이세금계산서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-02"
+  },
+  "format": "jpg",
+  "scanned": true,
+  "ocr_kind": "jpg",
+  "note": "카톡 사진 · 약칭",
+  "target_path": "한빛나루식당/2026/02_통장_증빙/한빛나루식당_2026-02_종이세금계산서.jpg",
+  "chars": 395
+ },
+ {
+  "id": "d12",
+  "file": "스캔003.pdf",
+  "client": "대성정밀공업사",
+  "client_short": "대성정밀",
+  "category": "정기증빙",
+  "doc_type": "종이세금계산서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-06"
+  },
+  "format": "pdf",
+  "scanned": true,
+  "ocr_kind": "scan",
+  "note": "스캔본",
+  "target_path": "대성정밀공업사/2026/02_통장_증빙/대성정밀공업사_2026-06_종이세금계산서.pdf",
+  "chars": 477
+ },
+ {
+  "id": "d13",
+  "file": "FAX_20260630.pdf",
+  "client": "주식회사 모모스토어",
+  "client_short": "모모스토어",
+  "category": "신고증빙",
+  "doc_type": "거래명세서",
+  "period": {
+   "cycle": "QUARTERLY",
+   "normalized": "2026-Q2"
+  },
+  "format": "pdf",
+  "scanned": true,
+  "ocr_kind": "scan",
+  "note": "팩스 흉내(스캔)",
+  "target_path": "주식회사 모모스토어/2026/03_부가세/주식회사 모모스토어_2026-Q2_거래명세서.pdf",
+  "chars": 746
+ },
+ {
+  "id": "d14",
+  "file": "거래명세서 1분기.xlsx",
+  "client": "푸른솔외국어학원",
+  "client_short": "푸른솔",
+  "category": "신고증빙",
+  "doc_type": "거래명세서",
+  "period": {
+   "cycle": "QUARTERLY",
+   "normalized": "2026-Q1"
+  },
+  "format": "xlsx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "푸른솔외국어학원/2026/03_부가세/푸른솔외국어학원_2026-Q1_거래명세서.xlsx",
+  "chars": 680
+ },
+ {
+  "id": "d15",
+  "file": "카드매입매출_2분기.xlsx",
+  "client": "세진건재상사",
+  "client_short": "세진건재",
+  "category": "신고증빙",
+  "doc_type": "카드매출매입내역",
+  "period": {
+   "cycle": "QUARTERLY",
+   "normalized": "2026-Q2"
+  },
+  "format": "xlsx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "세진건재상사/2026/03_부가세/세진건재상사_2026-Q2_카드매출매입내역.xlsx",
+  "chars": 728
+ },
+ {
+  "id": "d16",
+  "file": "Book1.xlsx",
+  "client": "한빛나루식당",
+  "client_short": "한빛나루",
+  "category": "신고증빙",
+  "doc_type": "카드매출매입내역",
+  "period": {
+   "cycle": "QUARTERLY",
+   "normalized": "2026-Q1"
+  },
+  "format": "xlsx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "본문 약칭",
+  "target_path": "한빛나루식당/2026/03_부가세/한빛나루식당_2026-Q1_카드매출매입내역.xlsx",
+  "chars": 788
+ },
+ {
+  "id": "d17",
+  "file": "잔액증명.pdf",
+  "client": "대성정밀공업사",
+  "client_short": "대성정밀",
+  "category": "신고증빙",
+  "doc_type": "잔액증명서",
+  "period": {
+   "cycle": "YEARLY",
+   "normalized": "2025"
+  },
+  "format": "pdf",
+  "scanned": true,
+  "ocr_kind": "scan",
+  "note": "스캔본",
+  "target_path": "대성정밀공업사/2025/04_결산_조정/대성정밀공업사_2025_잔액증명서.pdf",
+  "chars": 332
+ },
+ {
+  "id": "d18",
+  "file": "20251231_잔액증명서_모모.pdf",
+  "client": "주식회사 모모스토어",
+  "client_short": "모모스토어",
+  "category": "신고증빙",
+  "doc_type": "잔액증명서",
+  "period": {
+   "cycle": "YEARLY",
+   "normalized": "2025"
+  },
+  "format": "pdf",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "파일명에 약칭",
+  "target_path": "주식회사 모모스토어/2025/04_결산_조정/주식회사 모모스토어_2025_잔액증명서.pdf",
+  "chars": 263
+ },
+ {
+  "id": "d19",
+  "file": "제출용.hwpx",
+  "client": "푸른솔외국어학원",
+  "client_short": "푸른솔",
+  "category": "신고증빙",
+  "doc_type": "원천세신고서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-05"
+  },
+  "format": "hwpx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "사무소 산출물",
+  "target_path": "푸른솔외국어학원/2026/01_원천세_급여/푸른솔외국어학원_2026-05_원천세신고서.hwpx",
+  "chars": 446
+ },
+ {
+  "id": "d20",
+  "file": "2026년 1기 부가세 신고서.pdf",
+  "client": "세진건재상사",
+  "client_short": "세진건재",
+  "category": "신고증빙",
+  "doc_type": "부가세신고서",
+  "period": {
+   "cycle": "HALF",
+   "normalized": "2026-1H"
+  },
+  "format": "pdf",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "사무소 산출물",
+  "target_path": "세진건재상사/2026/03_부가세/세진건재상사_2026-1H_부가세신고서.pdf",
+  "chars": 467
+ },
+ {
+  "id": "d21",
+  "file": "취득확인.hwpx",
+  "client": "한빛나루식당",
+  "client_short": "한빛나루",
+  "category": "정기증빙",
+  "doc_type": "4대보험취득확인서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-08"
+  },
+  "format": "hwpx",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "사무소 산출물",
+  "target_path": "한빛나루식당/2026/01_원천세_급여/한빛나루식당_2026-08_4대보험취득확인서.hwpx",
+  "chars": 403
+ },
+ {
+  "id": "d22",
+  "file": "tax_invoice_0812.pdf",
+  "client": "주식회사 모모스토어",
+  "client_short": "모모스토어",
+  "category": "정기증빙",
+  "doc_type": "전자세금계산서",
+  "period": {
+   "cycle": "MONTHLY",
+   "normalized": "2026-08"
+  },
+  "format": "pdf",
+  "scanned": false,
+  "ocr_kind": null,
+  "note": "",
+  "target_path": "주식회사 모모스토어/2026/02_통장_증빙/주식회사 모모스토어_2026-08_전자세금계산서.pdf",
+  "chars": 379
+ }
+]

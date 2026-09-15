@@ -1,0 +1,4 @@
+{"kind":"bench","model":"minicpm5","threads":8,"taskset":"","pp":10.57,"tg":6.72}
+{"kind":"bench","model":"minicpm5","threads":4,"taskset":"taskset -c 6,7","pp":5.43,"tg":0.23}
+{"kind":"bench","model":"qwen","threads":8,"taskset":"","pp":14.92,"tg":8.59}
+{"kind":"bench","model":"qwen","threads":4,"taskset":"taskset -c 6,7","pp":null,"tg":null}

@@ -1,0 +1,2 @@
+{"kind":"bench","model":"minicpm5","threads":8,"taskset":"","pp":7.56,"tg":0.13}
+{"kind":"bench","model":"minicpm5","threads":4,"taskset":"taskset -c 4-7","pp":10.49,"tg":null}

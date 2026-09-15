@@ -1,0 +1,62 @@
+{"kind":"bench","model":"minicpm5","threads":2,"taskset":"taskset -c 6,7","pp":7.42,"tg":6.31,"state":"전원 NA · 클럭 2400/2600MHz (92%) · 여유 307MB · 가용 2999MB · 스왑사용 1273MB · 온도 30.6,NA"}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": true, "period": true}, "pred": {"client": "한빚나루식당", "category": "기본서류", "doc_type": "사업자등록증", "period": "PERMANENT"}, "expect": {"client": "한빛나루식당", "client_short": "한빛나루", "period": {"cycle": "PERMANENT", "normalized": "PERMANENT"}, "doc_type": "사업자등록증"}, "prompt_n": 644, "predicted_n": 40, "prompt_ms": 83951.492, "predicted_ms": 7249.755, "pp_tps": 7.671096542274674, "tg_tps": 5.379492134561788, "wall_s": 91.24, "chars": 310, "raw": "{\"client\": \"한빚나루식당\", \"category\": \"기본서류\", \"doc_type\": \"사업자등록증\", \"period\": \"PERMANENT\"}", "note": "", "kind": "label", "model": "minicpm5", "threads": 2, "doc": "d01"}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": false, "period": true}, "pred": {"client": "주식회사모스", "category": "기본서류", "doc_type": "사업자등록증", "period": "PERMANENT"}, "expect": {"client": "주식회사 모모스토어", "client_short": "모모스토어", "period": {"cycle": "PERMANENT", "normalized": "PERMANENT"}, "doc_type": "임대차계약서"}, "prompt_n": 813, "predicted_n": 38, "prompt_ms": 108054.478, "predicted_ms": 7349.878, "pp_tps": 7.523982485945654, "tg_tps": 5.034097164605998, "wall_s": 115.44, "chars": 614, "raw": "{\"client\": \"주식회사모스\", \"category\": \"기본서류\", \"doc_type\": \"사업자등록증\", \"period\": \"PERMANENT\"}", "note": "", "kind": "label", "model": "minicpm5", "threads": 2, "doc": "d03"}
+{"ok": false, "match": {"client": true, "category": false, "doc_type": true, "period": true}, "pred": {"client": "대성정밀", "category": "정기증빙", "doc_type": "급여대장", "period": "2026-04"}, "expect": {"client": "대성정밀공업사", "client_short": "대성정밀", "period": {"cycle": "MONTHLY", "normalized": "2026-04"}, "doc_type": "급여대장"}, "prompt_n": 804, "predicted_n": 39, "prompt_ms": 106996.67, "predicted_ms": 7623.336, "pp_tps": 7.514252546364293, "tg_tps": 4.984694364776785, "wall_s": 114.66, "chars": 492, "raw": "{\"client\": \"대성정밀\", \"category\": \"정기증빙\", \"doc_type\": \"급여대장\", \"period\": \"2026-04\"}", "note": "", "kind": "label", "model": "minicpm5", "threads": 2, "doc": "d07"}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": false, "period": false}, "pred": {"client": "가상상사", "category": "정기증빙", "doc_type": "급여대장", "period": "2026-03"}, "expect": {"client": "주식회사 모모스토어", "client_short": "모모스토어", "period": {"cycle": "QUARTERLY", "normalized": "2026-Q2"}, "doc_type": "거래명세서"}, "prompt_n": 875, "predicted_n": 39, "prompt_ms": 114964.325, "predicted_ms": 7629.255, "pp_tps": 7.61105673433911, "tg_tps": 4.980827092553598, "wall_s": 122.63, "chars": 746, "raw": "{\"client\": \"가상상사\", \"category\": \"정기증빙\", \"doc_type\": \"급여대장\", \"period\": \"2026-03\"}", "note": "", "kind": "label", "model": "minicpm5", "threads": 2, "doc": "d13"}
+{"ok": false, "match": {"client": true, "category": false, "doc_type": true, "period": false}, "pred": {"client": "푸른솔외국어학원", "category": "신고증빙", "doc_type": "원천세신고서", "period": "2026-06"}, "expect": {"client": "푸른솔외국어학원", "client_short": "푸른솔", "period": {"cycle": "MONTHLY", "normalized": "2026-05"}, "doc_type": "원천세신고서"}, "prompt_n": 771, "predicted_n": 45, "prompt_ms": 100681.94, "predicted_ms": 8886.698, "pp_tps": 7.657778544990292, "tg_tps": 4.951220352036268, "wall_s": 109.6, "chars": 430, "raw": "{\"client\": \"푸른솔외국어학원\", \"category\": \"신고증빙\", \"doc_type\": \"원천세신고서\", \"period\": \"2026-06\"}", "note": "", "kind": "label", "model": "minicpm5", "threads": 2, "doc": "d19"}
+{"kind":"summary","model":"minicpm5","threads":2,"n":5,"client_ok":2,"period_ok":3,"doc_type_ok":3,"avg_wall_s":110.71}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": true, "period": true}, "pred": {"client": "한빚나루식당", "category": "기본서류", "doc_type": "사업자등록증", "period": "PERMANENT"}, "expect": {"client": "한빛나루식당", "client_short": "한빛나루", "period": {"cycle": "PERMANENT", "normalized": "PERMANENT"}, "doc_type": "사업자등록증"}, "prompt_n": 644, "predicted_n": 40, "prompt_ms": 84417.612, "predicted_ms": 7316.887, "pp_tps": 7.628739841633995, "tg_tps": 5.330135616417201, "wall_s": 91.78, "chars": 310, "raw": "{\"client\": \"한빚나루식당\", \"category\": \"기본서류\", \"doc_type\": \"사업자등록증\", \"period\": \"PERMANENT\"}", "note": "", "kind": "thermal_label", "model": "minicpm5", "threads": 2, "doc": "d01", "elapsed": 93}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": false, "period": true}, "pred": {"client": "주식회사모스", "category": "기본서류", "doc_type": "사업자등록증", "period": "PERMANENT"}, "expect": {"client": "주식회사 모모스토어", "client_short": "모모스토어", "period": {"cycle": "PERMANENT", "normalized": "PERMANENT"}, "doc_type": "임대차계약서"}, "prompt_n": 813, "predicted_n": 38, "prompt_ms": 107544.503, "predicted_ms": 7350.238, "pp_tps": 7.559661138607894, "tg_tps": 5.033850604565457, "wall_s": 114.94, "chars": 614, "raw": "{\"client\": \"주식회사모스\", \"category\": \"기본서류\", \"doc_type\": \"사업자등록증\", \"period\": \"PERMANENT\"}", "note": "", "kind": "thermal_label", "model": "minicpm5", "threads": 2, "doc": "d03", "elapsed": 212}
+{"ok": false, "match": {"client": true, "category": false, "doc_type": true, "period": true}, "pred": {"client": "대성정밀", "category": "정기증빙", "doc_type": "급여대장", "period": "2026-04"}, "expect": {"client": "대성정밀공업사", "client_short": "대성정밀", "period": {"cycle": "MONTHLY", "normalized": "2026-04"}, "doc_type": "급여대장"}, "prompt_n": 804, "predicted_n": 39, "prompt_ms": 106670.48, "predicted_ms": 7671.569, "pp_tps": 7.537230544008051, "tg_tps": 4.953354392041576, "wall_s": 114.38, "chars": 492, "raw": "{\"client\": \"대성정밀\", \"category\": \"정기증빙\", \"doc_type\": \"급여대장\", \"period\": \"2026-04\"}", "note": "", "kind": "thermal_label", "model": "minicpm5", "threads": 2, "doc": "d07", "elapsed": 330}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": false, "period": false}, "pred": {"client": "가상상사", "category": "정기증빙", "doc_type": "급여대장", "period": "2026-03"}, "expect": {"client": "주식회사 모모스토어", "client_short": "모모스토어", "period": {"cycle": "QUARTERLY", "normalized": "2026-Q2"}, "doc_type": "거래명세서"}, "prompt_n": 875, "predicted_n": 39, "prompt_ms": 115402.345, "predicted_ms": 7496.376, "pp_tps": 7.582168282628919, "tg_tps": 5.069116063548573, "wall_s": 122.94, "chars": 746, "raw": "{\"client\": \"가상상사\", \"category\": \"정기증빙\", \"doc_type\": \"급여대장\", \"period\": \"2026-03\"}", "note": "", "kind": "thermal_label", "model": "minicpm5", "threads": 2, "doc": "d13", "elapsed": 457}
+{"ok": false, "match": {"client": true, "category": false, "doc_type": true, "period": false}, "pred": {"client": "푸른솔외국어학원", "category": "신고증빙", "doc_type": "원천세신고서", "period": "2026-06"}, "expect": {"client": "푸른솔외국어학원", "client_short": "푸른솔", "period": {"cycle": "MONTHLY", "normalized": "2026-05"}, "doc_type": "원천세신고서"}, "prompt_n": 771, "predicted_n": 45, "prompt_ms": 101018.166, "predicted_ms": 8815.835, "pp_tps": 7.632290611967752, "tg_tps": 4.991019001603366, "wall_s": 109.87, "chars": 430, "raw": "{\"client\": \"푸른솔외국어학원\", \"category\": \"신고증빙\", \"doc_type\": \"원천세신고서\", \"period\": \"2026-06\"}", "note": "", "kind": "thermal_label", "model": "minicpm5", "threads": 2, "doc": "d19", "elapsed": 570}
+{"ok": false, "match": {"client": false, "category": false, "doc_type": true, "period": true}, "pred": {"client": "한빚나루식당", "category": "기본서류", "doc_type": "사업자등록증", "period": "PERMANENT"}, "expect": {"client": "한빛나루식당", "client_short": "한빛나루", "period": {"cycle": "PERMANENT", "normalized": "PERMANENT"}, "doc_type": "사업자등록증"}, "prompt_n": 644, "predicted_n": 40, "prompt_ms": 84323.06, "predicted_ms": 7333.367, "pp_tps": 7.6372939976324385, "tg_tps": 5.3181574030046495, "wall_s": 91.69, "chars": 310, "raw": "{\"client\": \"한빚나루식당\", \"category\": \"기본서류\", \"doc_type\": \"사업자등록증\", \"period\": \"PERMANENT\"}", "note": "", "kind": "thermal_label", "model": "minicpm5", "threads": 2, "doc": "d01", "elapsed": 666}
+{"kind":"temp","elapsed":0,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":14,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":28,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":42,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":56,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":70,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":84,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":97,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":111,"battery_c":"31.0","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":125,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":137,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":151,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":165,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":179,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":193,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":207,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":220,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":234,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":248,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":262,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":275,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":289,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":303,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":317,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":331,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":343,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":357,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":371,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":385,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":399,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":413,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":426,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":440,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":454,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":467,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":481,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":495,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":509,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":523,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":536,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":550,"battery_c":"30.9","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":564,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":577,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":591,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":605,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":619,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":633,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":647,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}
+{"kind":"temp","elapsed":661,"battery_c":"30.8","zone0_c":"NA","mhz":"NA"}

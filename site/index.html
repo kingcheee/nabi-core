@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나비 — 버려지는 PC가 세무·회계 서류를 정리합니다</title>
+<meta name="description" content="클라우드에 넣을 수 없는 고객 서류를, 사무실 구석의 낡은 PC가 CPU만으로 읽고 라벨을 붙여 표준 폴더에 정리합니다. 소형 언어모델은 문서 이해만, 판정과 정리는 규칙엔진이. 외부 API 호출 0.">
+<meta property="og:title" content="나비 — 버려지는 PC가 세무·회계 서류를 정리합니다">
+<meta property="og:description" content="클라우드는 못 쓰고 장비는 못 사는 세무·회계 사무소를 위한 오프라인 서류 정리 비서. CPU만으로, 외부 API 호출 0.">
+<meta property="og:type" content="website">
+<style>
+  /* 랜딩은 「파일 하나」 규칙 — 체험 인스턴스가 죽어도 이 링크는 살아야 하므로 CSS를 <link> 대신 인라인으로 품는다.
+     토큰·버튼·카드·표·배지는 assets/app.css 와 같은 값이다. 값을 바꾸면 양쪽을 맞춘다.
+     외부 스크립트·웹폰트·CDN·외부 이미지 없음 — 「외부 API 호출 0」인 제품의 페이지. */
+  :root{
+    color-scheme:light;
+    --bg:#fff; --surface:#f8fafc; --line:#e5e7eb; --line-2:#cbd5e1; --ink:#0f172a; --muted:#64748b; --faint:#94a3b8;
+    --green:#15803d; --green-2:#166534; --green-bg:#dcfce7;
+    --amber:#b45309; --amber-bg:#fef3c7; --red:#b91c1c; --red-bg:#fee2e2; --blue:#1d4ed8; --blue-bg:#dbeafe; --gray-bg:#f1f5f9;
+    --sans:Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --radius:8px; --radius-sm:6px; --shadow:0 1px 2px rgba(15,23,42,.05);
+    --shadow-2:0 10px 30px rgba(15,23,42,.10),0 1px 2px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:80px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;
+       letter-spacing:-.005em;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+  a{color:var(--green);text-decoration:none}
+  a:hover{color:var(--green-2);text-decoration:underline;text-underline-offset:.15em}
+  h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.015em;line-height:1.3}
+  p{margin:0 0 1em}
+  code{font-family:var(--mono);font-size:.9em;background:var(--gray-bg);padding:.1em .35em;border-radius:4px}
+  .muted{color:var(--muted)}
+  [hidden]{display:none!important}
+  .ico{width:1.25rem;height:1.25rem;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.28em;flex:none}
+  .ico.lg{width:1.5rem;height:1.5rem}
+  .brand{display:inline-flex;align-items:center;gap:.5rem;color:var(--ink);font-weight:800;font-size:1.1rem;letter-spacing:-.02em}
+  .brand:hover{color:var(--ink);text-decoration:none}
+  .brand .mark{width:26px;height:26px;flex:none}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;font:inherit;font-size:.9rem;font-weight:600;line-height:1;
+       padding:.6rem .95rem;border-radius:var(--radius-sm);border:1px solid transparent;cursor:pointer;white-space:nowrap;text-decoration:none;
+       transition:background .12s,border-color .12s,color .12s}
+  .btn:hover{text-decoration:none}
+  .btn-primary{background:var(--green);color:#fff;border-color:var(--green)}
+  .btn-primary:hover{background:var(--green-2);border-color:var(--green-2);color:#fff}
+  .btn-secondary{background:#fff;color:var(--ink);border-color:var(--line-2)}
+  .btn-secondary:hover{background:var(--surface);color:var(--ink);border-color:var(--faint)}
+  .btn-lg{font-size:1rem;padding:.85rem 1.4rem}
+  .btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed;pointer-events:none}
+  .badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.76rem;font-weight:600;line-height:1;padding:.32em .6em;border-radius:999px;white-space:nowrap;vertical-align:middle}
+  .badge-ready{background:var(--green-bg);color:var(--green)}
+  .badge-held{background:var(--amber-bg);color:var(--amber)}
+  .badge-blue{background:var(--blue-bg);color:var(--blue)}
+  .badge-gray{background:var(--gray-bg);color:var(--muted)}
+  .badge-soon{background:#fff;color:var(--muted);border:1px dashed var(--line-2)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem}
+  .card h3{font-size:1rem;margin:0 0 .5rem}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.1rem 1.25rem}
+  .stat .l{font-size:.82rem;color:var(--muted);font-weight:600}
+  .stat .n{font-size:1.9rem;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:.35rem 0 .1rem;font-variant-numeric:tabular-nums}
+  .stat .n small{font-size:.9rem;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:.15rem}
+  .stat .s{font-size:.8rem;color:var(--muted)}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow)}
+  table.data{width:100%;border-collapse:collapse;font-size:.9rem}
+  table.data th,table.data td{text-align:left;padding:.65rem .9rem;border-bottom:1px solid var(--line);vertical-align:middle}
+  table.data thead th{background:var(--surface);color:var(--muted);font-size:.78rem;font-weight:600;white-space:nowrap}
+  table.data tbody tr:last-child td{border-bottom:0}
+  table.data td.n,table.data th.n{text-align:right;font-variant-numeric:tabular-nums}
+
+  /* ---- 랜딩 레이아웃 */
+  .site-nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .site-nav .in{max-width:1120px;margin:0 auto;padding:0 1.25rem;height:64px;display:flex;align-items:center;gap:1.5rem}
+  .site-nav nav{display:flex;gap:1.25rem;margin-left:.75rem}
+  .site-nav nav a{color:var(--muted);font-size:.9rem;font-weight:500}
+  .site-nav nav a:hover{color:var(--ink);text-decoration:none}
+  .site-nav .cta{margin-left:auto;display:flex;gap:.5rem}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 1.25rem}
+  section{padding:88px 0}
+  section.tight{padding:56px 0}
+  section.alt{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sec-head{max-width:44rem;margin:0 0 2.25rem}
+  .eyebrow{color:var(--green);font-weight:700;font-size:.82rem;letter-spacing:.04em;margin:0 0 .6rem}
+  .sec-head h2{font-size:1.9rem;letter-spacing:-.025em;margin:0 0 .7rem}
+  .sec-head p{color:var(--muted);font-size:1.05rem;margin:0}
+  .grid{display:grid;gap:1rem}
+  .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+  /* 히어로 */
+  .hero{padding:80px 0 48px;text-align:center}
+  .hero .pill{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:600;color:var(--green);background:var(--green-bg);
+              border-radius:999px;padding:.35rem .8rem;margin:0 0 1.4rem}
+  .hero h1{font-size:3rem;line-height:1.15;letter-spacing:-.03em;max-width:18em;margin:0 auto .9rem}
+  .hero .sub{font-size:1.15rem;color:var(--muted);max-width:40rem;margin:0 auto 1.8rem;line-height:1.65}
+  .hero .cta{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin:0 0 .9rem}
+  .hero .fine{font-size:.82rem;color:var(--faint);margin:0 0 3rem}
+  .shot{max-width:1120px;margin:0 auto;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-2);overflow:hidden;background:#fff}
+  .shot .bar{height:36px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.5rem;padding:0 .9rem}
+  .shot .bar i{width:10px;height:10px;border-radius:50%;background:var(--line-2);display:block}
+  .shot .bar .url{margin-left:.6rem;flex:1;max-width:28rem;height:22px;border-radius:6px;background:#fff;border:1px solid var(--line);
+                  font-size:.74rem;color:var(--muted);display:flex;align-items:center;padding:0 .6rem;font-family:var(--mono)}
+  .shot img{display:block;width:100%;height:auto}
+
+  /* 문제 띠 */
+  .problem{background:var(--ink);color:#e2e8f0}
+  .problem .wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1.25rem;align-items:start}
+  .problem .ico{color:#86efac;width:1.6rem;height:1.6rem;margin-top:.2rem}
+  .problem p{margin:0;font-size:1.05rem;line-height:1.7}
+  .problem p b{color:#fff}
+  .problem small{display:block;color:#94a3b8;margin-top:.5rem;font-size:.86rem}
+
+  /* 작동 방식 */
+  .step{position:relative;padding-top:1.25rem}
+  .step .num{position:absolute;top:1.1rem;right:1.1rem;font-size:.78rem;font-weight:700;color:var(--faint);font-family:var(--mono)}
+  .step .ico{color:var(--green);width:1.6rem;height:1.6rem;margin-bottom:.8rem}
+  .step h3{font-size:1.05rem}
+  .step p{margin:0;color:var(--muted);font-size:.92rem}
+  .step .tag{margin-top:.8rem}
+
+  /* 기능 */
+  .feat{padding:1.25rem 1.25rem 1.1rem}
+  .feat .ico{color:var(--green);margin-bottom:.6rem}
+  .feat h3{font-size:1rem}
+  .feat p{margin:0;color:var(--muted);font-size:.9rem}
+
+  /* 파이프라인 */
+  .pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;margin:0 0 1.6rem}
+  .pipe .box{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:.9rem .9rem .8rem;box-shadow:var(--shadow);position:relative}
+  .pipe .box.ai{border-color:var(--green);background:var(--green-bg);box-shadow:0 0 0 3px rgba(21,128,61,.12)}
+  .pipe .box b{display:block;font-size:.98rem;margin-bottom:.15rem}
+  .pipe .box span{font-size:.78rem;color:var(--muted)}
+  .pipe .box.ai span{color:var(--green-2)}
+  .pipe .box .who{display:inline-block;margin-top:.6rem;font-size:.72rem;font-weight:700;padding:.25em .55em;border-radius:999px;background:var(--gray-bg);color:var(--muted)}
+  .pipe .box.ai .who{background:var(--green);color:#fff}
+  .pipe .box.human .who{background:var(--amber-bg);color:var(--amber)}
+  .pipe .box::after{content:"→";position:absolute;right:-.62rem;top:50%;transform:translateY(-50%);color:var(--faint);font-size:.9rem;z-index:1}
+  .pipe .box:last-child::after{content:none}
+  .pipe-text{max-width:44rem;color:var(--ink);font-size:1rem}
+  .pipe-text p{margin:0 0 .9em}
+
+  /* 실측 */
+  .acc-note{font-size:.9rem;color:var(--muted);margin:1rem 0 0;max-width:44rem}
+  .acc-note b{color:var(--ink)}
+
+  /* 지원 기기 */
+  .dev{padding:1.25rem}
+  .dev .ico{color:var(--green);width:1.5rem;height:1.5rem;margin-bottom:.6rem}
+  .dev h3{font-size:1rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+  .dev p{margin:0;color:var(--muted);font-size:.88rem}
+  .dev .m{margin-top:.8rem;padding-top:.7rem;border-top:1px solid var(--line);font-size:.86rem;color:var(--ink)}
+  .dev .m b{font-variant-numeric:tabular-nums}
+
+  /* 요금 */
+  .plan{padding:1.5rem;display:flex;flex-direction:column;gap:.9rem}
+  .plan.core{border-color:var(--green);box-shadow:0 0 0 3px rgba(21,128,61,.10)}
+  .plan h3{font-size:1.1rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+  .plan .price{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+  .plan .price small{font-size:.85rem;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:.3rem}
+  .plan ul{margin:0;padding-left:1.15rem;color:var(--muted);font-size:.9rem;display:grid;gap:.3rem}
+  .plan .btn{margin-top:auto}
+
+  /* FAQ */
+  .faq{max-width:44rem}
+  .faq details{border-bottom:1px solid var(--line);padding:.9rem 0}
+  .faq details:first-child{border-top:1px solid var(--line)}
+  .faq summary{cursor:pointer;font-weight:700;font-size:1rem;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";color:var(--faint);font-weight:400;flex:none}
+  .faq details[open] summary::after{content:"–"}
+  .faq details p{margin:.6rem 0 0;color:var(--muted);font-size:.95rem}
+  .faq details p:last-child{margin-bottom:0}
+
+  /* 푸터 */
+  .site-footer{border-top:1px solid var(--line);padding:2.5rem 0 3rem;font-size:.86rem;color:var(--muted)}
+  .site-footer .in{display:flex;flex-wrap:wrap;gap:1.5rem 3rem;align-items:flex-start}
+  .site-footer .links{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem}
+  .site-footer .links a{color:var(--muted)}
+  .site-footer .note{flex-basis:100%;margin:0}
+
+  @media (max-width:1024px){
+    .hero h1{font-size:2.4rem}
+    .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .pipe{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .pipe .box::after{content:none}
+  }
+  @media (max-width:768px){
+    .site-nav nav{display:none}
+    .site-nav .in{height:56px}
+    section{padding:56px 0}
+    .hero{padding:48px 0 32px}
+    .hero h1{font-size:1.9rem}
+    .hero .sub{font-size:1rem}
+    .grid-2,.grid-3,.grid-4{grid-template-columns:minmax(0,1fr)}
+    .pipe{grid-template-columns:minmax(0,1fr)}
+    .problem .wrap{grid-template-columns:minmax(0,1fr)}
+    .sec-head h2{font-size:1.5rem}
+  }
+</style>
+</head>
+<body>
+
+<svg hidden xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#15803d"/><path d="M6.5 8 14 16l-7.5 8z" fill="#fff"/><path d="M25.5 8 18 16l7.5 8z" fill="#fff" opacity=".8"/><path d="M16 7v18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></symbol>
+  <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></symbol>
+  <symbol id="i-board" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01M18 12h.01"/></symbol>
+</svg>
+
+<header class="site-nav">
+  <div class="in">
+    <a class="brand" href="./"><svg class="mark" aria-hidden="true"><use href="#i-logo"/></svg>나비</a>
+    <nav aria-label="페이지 안">
+      <a href="#features">기능</a><a href="#how">작동 방식</a><a href="#measured">실측</a><a href="#devices">지원 기기</a><a href="#pricing">요금</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="cta">
+      <a class="btn btn-secondary" href="download/">설치기</a>
+      <a class="btn btn-primary" href="try/">체험하기</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="pill"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>세무·회계 사무소를 위한 오프라인 서류 정리 비서</div>
+      <h1>버려지는 PC가 세무·회계 서류를 정리합니다</h1>
+      <p class="sub">클라우드에 넣을 수 없는 고객 서류를, 사무실 구석의 낡은 PC가 CPU만으로 읽고 라벨을 붙여 표준 폴더에 정리합니다. 외부 API 호출 0.</p>
+      <div class="cta">
+        <a class="btn btn-primary btn-lg" href="try/">체험하기 — 샘플 서류 22건</a>
+        <a class="btn btn-secondary btn-lg" href="download/">설치기</a>
+      </div>
+      <p class="fine">GPU 없음 · 인터넷 없이 동작 · 공개 코어 Apache-2.0</p>
+      <figure class="shot" style="margin:0">
+        <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span class="url">nabi.local/try/#/inbox</span></div>
+        <img src="assets/dashboard.jpg" width="1600" height="900" alt="나비 앱 화면 — 받은 서류함에 서류 22건이 확정·보류 배지와 함께 늘어서 있고, 오른쪽 상세 패널에 모델이 낸 값·규칙엔진 판정·샘플 정답 비교와 보류 사유, 승인 버튼이 보인다">
+      </figure>
+    </div>
+  </section>
+
+  <section class="problem tight">
+    <div class="wrap">
+      <svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>
+      <div>
+        <p>세무사·회계사는 고객 재무 정보에 <b>법적 비밀유지 의무</b>를 집니다(세무사법 제11조·제22조, 공인회계사법 제20조·제53조).
+        그래서 고객 서류를 ChatGPT에 넣을 수 없고, 온프레미스 AI 장비는 수천만 원입니다. 결국 「KakaoTalk_20260710.jpg」 「Scan_001.pdf」를 사람이 한 장씩 열어 정리합니다.</p>
+        <small>나비는 이미 갖고 있거나 버리려던 PC에서 돕니다 — 서류는 기기를 떠나지 않습니다.</small>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">작동 방식</p>
+        <h2>세 조각으로 버려진 기기가 비서가 됩니다</h2>
+        <p>기기를 되살리고, 설치기가 그 기기에 맞게 세팅하고, 에이전트 쉘이 일을 맡습니다. 첫 일은 서류 라벨링입니다.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card step"><span class="num">01</span><svg class="ico" aria-hidden="true"><use href="#i-refresh"/></svg>
+          <h3>되살리기</h3><p>버려지는 PC·폰을 비서 전용기로 씁니다. GPU를 요구하지 않습니다 — 조건은 CPU가 있을 것 하나입니다.</p>
+          <div class="tag"><span class="badge badge-gray">폐PC · 폐폰 · 미니PC</span></div></div>
+        <div class="card step"><span class="num">02</span><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg>
+          <h3>설치기</h3><p>기기를 재서 추론 엔진 빌드(AVX1/AVX2/ARM)·모델 크기·스레드 수와 코어 고정을 자동으로 고릅니다. 같은 기기가 설정 하나로 5.3배 느려질 수 있어서입니다.</p>
+          <div class="tag"><span class="badge badge-soon">v0 준비 중</span></div></div>
+        <div class="card step"><span class="num">03</span><svg class="ico" aria-hidden="true"><use href="#i-board"/></svg>
+          <h3>에이전트 쉘</h3><p>파일을 열고 · 읽고 · 라벨 붙이고 · 확인 받고 · 옮기는 껍질입니다. 첫 일은 세무·회계 서류 라벨링이고, 이 화면이 <a href="try/">체험</a>에 있습니다.</p>
+          <div class="tag"><span class="badge badge-ready">체험 가능</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">기능</p>
+        <h2>사무소가 실제로 쓰는 규칙으로 정리합니다</h2>
+        <p>라벨은 네 축, 폴더와 파일명은 실무 표준, 확신이 낮으면 보류. 모든 이동은 되돌릴 수 있고 대장은 지워지지 않습니다.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card feat"><svg class="ico" aria-hidden="true"><use href="#i-tag"/></svg><h3>라벨링 4축</h3><p>거래처 · 분류 · 서류 종류(15종) · 기간. 소형 언어모델이 본문을 읽고 네 값을 JSON으로 냅니다.</p></div>
+        <div class="card feat"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><h3>보류와 확인 큐</h3><p>거래처가 목록에 없거나 기간 형식이 주기와 어긋나면 옮기지 않고 사람에게 넘깁니다. 보류는 오류가 아니라 정식 출력입니다.</p></div>
+        <div class="card feat"><svg class="ico" aria-hidden="true"><use href="#i-folder"/></svg><h3>실무 표준 폴더·파일명</h3><p><code>[거래처]/[연도]/01_원천세_급여</code> 같은 폴더와 <code>[거래처]_[귀속시기]_[서류명]</code> 파일명. 규칙엔진이 만듭니다.</p></div>
+        <div class="card feat"><svg class="ico" aria-hidden="true"><use href="#i-scan"/></svg><h3>스캔 · 팩스 · 카톡 사진</h3><p>텍스트 PDF · 엑셀 · 한글 · 워드는 물론 스캔 PDF·팩스·JPG도 기기 안의 OCR(Tesseract 한국어)로 읽습니다.</p></div>
+        <div class="card feat"><svg class="ico" aria-hidden="true"><use href="#i-undo"/></svg><h3>되돌리기 · 감사 기록</h3><p>이동은 옮기기 + 기록이라 언제든 되돌립니다. 대장은 덧붙이기만 해서 누가 언제 무엇을 승인했는지 지워지지 않습니다.</p></div>
+        <div class="card feat"><svg class="ico" aria-hidden="true"><use href="#i-plug"/></svg><h3>오프라인 · 외부 호출 0</h3><p>모델은 기기 안에서 돌고 외부 API를 부르지 않습니다. 설치가 끝나면 인터넷을 끊어도 됩니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ai">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">AI 활용 방식</p>
+        <h2>언어모델이 하는 일은 한 칸뿐입니다</h2>
+        <p>파일을 열어 글자를 뽑는 것도, 판정도, 폴더 경로도 규칙이 합니다. 그래서 2B급 모델로 충분하고, 모델이 틀려도 파일이 사라지지 않습니다.</p>
+      </div>
+      <div class="pipe" role="list">
+        <div class="box" role="listitem"><b>파서</b><span>파일 → 본문 (PDF·엑셀·한글·워드·OCR)</span><br><span class="who">결정론</span></div>
+        <div class="box ai" role="listitem"><b>소형 언어모델</b><span>본문을 읽고 4축 JSON만 낸다</span><br><span class="who">문서 이해만</span></div>
+        <div class="box" role="listitem"><b>규칙엔진</b><span>거래처 대조 · 기간 검증 · 경로 생성</span><br><span class="who">결정론</span></div>
+        <div class="box human" role="listitem"><b>확인 큐</b><span>확정은 승인, 보류는 고쳐서 승인</span><br><span class="who">사람</span></div>
+        <div class="box" role="listitem"><b>이동</b><span>표준 폴더로 · 기록 · 되돌리기</span><br><span class="who">결정론</span></div>
+      </div>
+      <div class="pipe-text">
+        <p>소형 언어모델(MiniCPM5-2B, CPU에서 llama.cpp로 구동)은 파서가 뽑은 본문을 읽고 「거래처 · 분류 · 서류 종류 · 기간」 네 값을 JSON으로 내는 일만 합니다. 출력은 JSON 스키마로 문법을 강제하고 서류 종류는 15종 어휘로 고정합니다.</p>
+        <p>규칙엔진이 그 값을 등록 거래처 목록과 대조하고(「한빚나루식당」 → 「한빛나루식당」), 기간 형식이 서류의 주기와 맞는지 검사한 뒤 표준 폴더 경로를 만듭니다. 어긋나면 보류로 확인 큐에 올리고, 사람이 고쳐서 승인한 수정은 별칭으로 규칙에 되돌아갑니다. 파일 1건 = 세션 1회로 KV 캐시를 새로 열어 서류 사이에 문맥이 섞이지 않게 하고, 같은 설정으로 발열을 잡습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="measured" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">실측</p>
+        <h2>우리가 직접 잰 값만 적습니다</h2>
+        <p>재지 못한 것은 「예정」, 조사로 잡은 기준은 「조사 기준」이라고 씁니다. 목표에 못 미치는 값도 고치지 않고 그대로 둡니다.</p>
+      </div>
+      <div class="grid grid-4" style="margin-bottom:1.25rem">
+        <div class="stat"><div class="l">노트북 (i7-10750H, 4스레드)</div><div class="n">18.7<small>초 / 건</small></div><div class="s">MiniCPM5-2B · 서류 5건 평균 · 2026-09-10</div></div>
+        <div class="stat"><div class="l">Galaxy A34 6GB 폐폰</div><div class="n">89.1<small>초 / 건</small></div><div class="s">MiniCPM5-2B · 8스레드 · 같은 서류 5건</div></div>
+        <div class="stat"><div class="l">외부 API 호출</div><div class="n">0<small>건</small></div><div class="s">서류는 기기를 떠나지 않습니다</div></div>
+        <div class="stat"><div class="l">샘플 서류</div><div class="n">22<small>건</small></div><div class="s">엑셀 · PDF · 한글 · 워드 · 스캔 · 팩스 · 카톡 사진 (7종 형식)</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>정확도 — 서류 22건 (MiniCPM5-2B, 규칙 통과 후)</th><th class="n">텍스트 서류 14건</th><th class="n">스캔 · 팩스 · 사진 8건</th></tr></thead>
+          <tbody>
+            <tr><td>거래처</td><td class="n">93%</td><td class="n">38%</td></tr>
+            <tr><td>서류 종류</td><td class="n">64%</td><td class="n">38%</td></tr>
+            <tr><td>기간</td><td class="n">86%</td><td class="n">50%</td></tr>
+            <tr><td><b>네 라벨 전부</b></td><td class="n"><b>57%</b></td><td class="n"><b>38%</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="acc-note"><b>목표에 못 미치는 값이고, 고치지 않고 그대로 적었습니다.</b> 틀린 것의 대부분은 「보류」로 사람에게 넘어갑니다. 서류 종류를 가르는 단서를 프롬프트에 주는 개선을 시험하는 중이고, 샘플을 100건으로 늘려 다시 잽니다.
+      거래처 93%는 규칙엔진이 만든 값입니다 — 모델이 「한빚나루식당」이라고 내놓은 것을 등록 목록과 대조해 고쳐 붙였습니다. 출처 2026-09-10 실측.</p>
+    </div>
+  </section>
+
+  <section id="devices">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">지원 기기</p>
+        <h2>조건은 하나, CPU가 있을 것</h2>
+        <p>같은 프로그램이 2020년 노트북에서도 6GB 폐폰에서도 돕니다. 설치기가 기기를 재서 맞는 빌드·모델·스레드를 고릅니다.</p>
+      </div>
+      <div class="grid grid-4">
+        <div class="card dev"><svg class="ico" aria-hidden="true"><use href="#i-monitor"/></svg><h3>폐PC <span class="badge badge-ready">실측</span></h3>
+          <p>2013년 이전 AVX1 CPU 포함 — 공식 llama.cpp 바이너리가 죽는 PC도 설치기가 맞는 빌드를 고릅니다.</p>
+          <div class="m">2020년 노트북 (i7-10750H) <b>18.7초 / 건</b></div></div>
+        <div class="card dev"><svg class="ico" aria-hidden="true"><use href="#i-smartphone"/></svg><h3>폐폰 <span class="badge badge-ready">실측</span></h3>
+          <p>RAM 6GB 이상 · 2019년 이후 칩셋 (조사 기준). 전원에 꽂아 두고 씁니다.</p>
+          <div class="m">Galaxy A34 <b>89.1초</b> · Note 20 Ultra <b>81.0초</b> / 건</div></div>
+        <div class="card dev"><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg><h3>미니PC <span class="badge badge-soon">예정</span></h3>
+          <p>Intel N100 8GB — 체험 인스턴스가 될 기기입니다. 실측 후 여기에 적습니다.</p>
+          <div class="m muted">아직 재지 않았습니다</div></div>
+        <div class="card dev"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg><h3>SBC <span class="badge badge-soon">예정</span></h3>
+          <p>Raspberry Pi 5. ARM dotprod 빌드로 같은 코어가 돕니다.</p>
+          <div class="m muted">아직 재지 않았습니다</div></div>
+      </div>
+      <p style="margin:1.25rem 0 0"><a href="phone/">지원 기기 · 벤치마크 자세히 — 실측표 12행, 스레드 설정 하나로 5.3배, 10분 연속 구동 온도 →</a></p>
+    </div>
+  </section>
+
+  <section id="pricing" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">요금</p>
+        <h2>코어는 공개, 쉘은 구독</h2>
+        <p>라벨링 엔진·규칙엔진·확인 큐는 Apache-2.0으로 공개합니다. 사무소가 돈을 내는 것은 그 위에서 일을 맡기는 쉘과 정비된 기기입니다.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card plan core">
+          <h3>공개 코어 <span class="badge badge-ready">무료</span></h3>
+          <div class="price">무료<small>Apache-2.0</small></div>
+          <ul><li>설치기 (기기 자동 최적화)</li><li>라벨링 엔진 · 규칙엔진</li><li>확인 큐 · 되돌리기 · 감사 기록</li><li>로컬 화면 (이 사이트의 체험과 같은 화면)</li></ul>
+          <a class="btn btn-secondary" href="download/">설치기 보기</a>
+        </div>
+        <div class="card plan">
+          <h3>에이전트 쉘 구독 <span class="badge badge-soon">준비 중</span></h3>
+          <div class="price">준비 중<small>가격 미정</small></div>
+          <ul><li>관리 콘솔 · 자동 갱신</li><li>도메인 규칙팩 (세무 · 회계 실무 규칙)</li><li>알림 연동</li><li>지원</li></ul>
+          <a class="btn btn-secondary" aria-disabled="true" href="#pricing">출시 알림 — 준비 중</a>
+        </div>
+        <div class="card plan">
+          <h3>리퍼 머신 <span class="badge badge-soon">준비 중</span></h3>
+          <div class="price">준비 중<small>가격 미정</small></div>
+          <ul><li>정비한 폐PC에 설치 이미지를 넣어 배송</li><li>전원만 꽂으면 되는 비서 전용기</li><li>USB 설치 이미지 (모델 동봉, 오프라인 완결)</li></ul>
+          <a class="btn btn-secondary" aria-disabled="true" href="#pricing">준비 중</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">FAQ</p>
+        <h2>자주 묻는 것</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Ollama · LM Studio와 무엇이 다른가요?</summary>
+          <p>그 도구들은 모델을 「돌리는」 도구이고, 나비는 서류를 「정리하는」 일을 맡는 비서입니다. 2013년 이전 PC(AVX1)와 6GB 폐폰까지 설치기가 빌드·모델·스레드를 자동으로 고르고, 그 위에 확인 큐·표준 폴더 규칙·되돌리기·감사 기록이 들어 있습니다. 모델을 띄우는 것이 아니라 일이 끝나는 것이 목표입니다.</p></details>
+        <details><summary>서류가 밖으로 나가나요?</summary>
+          <p>아니요. 모델은 기기 안에서 돌고 외부 API를 부르지 않습니다. 설치가 끝나면 인터넷을 끊어도 됩니다. 이 사이트의 체험도 우리가 준비한 샘플 서류(가명)만 다루고 방문자의 파일은 받지 않습니다.</p></details>
+        <details><summary>어떤 PC면 되나요?</summary>
+          <p>CPU가 있으면 됩니다. GPU는 쓰지 않습니다. 설치기가 CPU 명령어(AVX1/AVX2/ARM)·RAM·코어 구성·메모리 대역폭을 재서 그 기기에 맞는 추론 엔진 빌드와 모델 크기(2B 기본)를 고릅니다. 우리가 실제로 돌린 가장 낮은 기기는 6GB Galaxy A34입니다.</p></details>
+        <details><summary>정확도는 어느 정도인가요?</summary>
+          <p>위 실측표 그대로입니다 — 텍스트 서류 14건에서 네 라벨 전부 57%, 스캔·사진 8건에서 38%. 목표에 못 미치고, 그래서 확신이 낮으면 「보류」가 정식 출력입니다. 틀린 것의 대부분이 보류로 사람에게 넘어가고, 사람이 고친 수정은 별칭으로 규칙에 되돌아갑니다. 100건으로 다시 잽니다.</p></details>
+        <details><summary>왜 2B 모델인가요?</summary>
+          <p>언어모델이 하는 일이 한 칸(본문을 읽고 4축 JSON)뿐이라 큰 모델이 필요 없고, 2B급이면 CPU만으로 서류 1건을 노트북에서 18.7초, 폐폰에서 1분 반 안에 읽습니다(실측). 판정과 경로는 규칙엔진이 하므로 모델이 틀려도 파일이 사라지지 않습니다. 우리가 잰 두 모델(MiniCPM5-2B · Qwen2.5-1.5B) 중 더 정확한 쪽을 기본으로 골랐습니다.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack" class="alt tight">
+    <div class="wrap">
+      <div class="sec-head" style="margin-bottom:1.25rem">
+        <p class="eyebrow">사용 도구 · 라이선스</p>
+        <h2 style="font-size:1.4rem">전부 공개된 것 위에 서 있습니다</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>구분</th><th>도구</th><th>라이선스</th></tr></thead>
+          <tbody>
+            <tr><td>추론 엔진</td><td>llama.cpp (CPU 빌드 — AVX1 / AVX2 / ARM)</td><td>MIT</td></tr>
+            <tr><td>모델</td><td>MiniCPM5-2B (기본) · Qwen2.5-1.5B-Instruct (저사양 후보) — Hugging Face 배포본</td><td>Apache-2.0</td></tr>
+            <tr><td>OCR</td><td>Tesseract 5 + 한국어 데이터</td><td>Apache-2.0</td></tr>
+            <tr><td>파서</td><td>PyMuPDF · openpyxl · python-docx · hwpx 파서</td><td>각 라이선스</td></tr>
+            <tr><td>우리 코드</td><td>설치기 · 라벨링 엔진 · 규칙엔진 · 확인 큐 · 이 화면 (파이썬 표준 라이브러리)</td><td>Apache-2.0 (공개 준비 중)</td></tr>
+            <tr><td>개발 도구</td><td>Claude Code · Antigravity (설계·구현·실측 자동화에 사용)</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap in">
+    <a class="brand" href="./"><svg class="mark" aria-hidden="true"><use href="#i-logo"/></svg>나비</a>
+    <div class="links"><a href="try/">체험</a><a href="download/">설치기</a><a href="phone/">지원 기기 · 벤치마크</a><span>라이선스 Apache-2.0</span><span>2026 인공지능사관학교 파이널 팀</span></div>
+    <p class="note">이 페이지는 정적 파일 하나입니다. 체험 인스턴스가 멈춰도 이 링크는 살아 있습니다. 외부 스크립트·웹폰트를 쓰지 않습니다.</p>
+  </div>
+</footer>
+
+</body>
+</html>

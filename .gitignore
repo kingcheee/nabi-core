@@ -1,0 +1,16 @@
+# 파이썬
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 모델 가중치는 저장소에 넣지 않는다 (각 모델 라이선스를 따른다)
+*.gguf
+
+# 런타임 산출물
+web/.sessions/
+bench/results/.server-*.log
+
+# 샘플 생성 중간 산출 (tools/make_samples.py)
+samples/originals/
+samples/_hwpx/
+data/
