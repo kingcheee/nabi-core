@@ -60,13 +60,12 @@ python3 -m web --demo            # → http://127.0.0.1:8098/  (앱 /try/)
 ## 심사용 스크린샷 (원티드 폼 — 대표 이미지 1 + 스크린샷 최대 5, 16:9)
 
 ```bash
-NODE_PATH=~/workspace/03-agents/naver-agent/node_modules node tools/site_shots.js <출력폴더>
+NODE_PATH=<playwright가 있는 node_modules> node tools/site_shots.js <출력폴더>
 ```
 
 1600×900으로 다섯 장 — `01-landing` · `02-inbox-drawer`(대표 이미지) · `03-queue`(수정 폼 열림) · `04-organized` · `05-dashboard`(활동 있음).
 새 방문자 세션에서 확정 7건 승인 + 보류 1건 고쳐서 승인한 상태를 만든 뒤 찍는다. 히어로 스크린샷은
 `magick 02-inbox-drawer.png -resize 1600x -quality 82 -strip site/assets/dashboard.jpg`(300KB 이하).
-2026-09-11 산출물은 대회 폴더 `~/projects/02-hackathon/2026-원티드-AI-챔피언십/hackathon/2026-09-11-사이트/`.
 
 ## 랜딩을 정적으로 분리하는 이유
 
@@ -97,6 +96,6 @@ N100이 죽으면 `/try`는 배너와 함께 기록만 보여주고, 나머지 �
   조사로 잡은 기준선(폐폰 6GB 등)은 「조사 기준」이라고 적는다. 고객·후기·사용자 수·버전·날짜를 지어내지 않는다.
 - `try/recorded.json`은 손으로 고치지 않는다 — `python3 -m web.record`로만 만든다(지금은 이 노트북 값, N100이 오면 다시).
 - 제품 이름 「나비」는 잠정명이다. 요금 섹션은 넣되 가격은 적지 않는다(지우 결정 2026-09-11).
-- 저장소는 아직 비공개다. 죽은 링크를 걸지 않는다 — 공개 시점은 지우가 정한다.
+- 저장소 링크는 공개 저장소 https://github.com/kingcheee/nabi-core 만 건다. 죽은 링크를 걸지 않는다.
 - 영상은 자리만 있다(랜딩·`/phone` 「촬영 예정」). 촬영되면 그 자리에 붙인다 — 외부 스크립트 없이(파일 직접 또는 링크).
 - `tests/test_web.py`가 `/`·`/try`의 200과 `<h1>`을 본다 — 랜딩·앱에 `<h1>`은 남긴다.
