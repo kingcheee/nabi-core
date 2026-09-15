@@ -3,8 +3,7 @@
 //
 //   python3 -m web --demo                      # 8098 에 떠 있어야 한다 (모델 서버는 없어도 된다)
 //   NODE_PATH=<playwright 가 있는 node_modules> node tools/site_shots.js [출력폴더] [BASE]
-//   예) NODE_PATH=~/workspace/03-agents/naver-agent/node_modules node tools/site_shots.js \
-//         ~/projects/02-hackathon/2026-원티드-AI-챔피언십/hackathon/2026-09-11-사이트
+//   예) NODE_PATH=./node_modules node tools/site_shots.js shots
 //
 // Playwright(크로미엄)만 쓴다 — 저장소에 의존성을 두지 않으려고 NODE_PATH 로 빌린다(`npm i playwright` 해도 된다).
 // 방문자별 샌드박스라 여기서 승인한 것은 다른 방문자에게 보이지 않는다.

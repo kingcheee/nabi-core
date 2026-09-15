@@ -26,9 +26,11 @@ bench/bench.sh --thermal      # 발열 10분 (첫 모델·첫 스레드 설정)
 
 A34(SM-A346N, 6GB, Dimensity 1080)에는 Termux + `pkg llama-cpp` + 두 모델(`~/llm-lab/models/`)이 이미 있다. 코어 6·7이 A78 빅코어, 0~5가 A55.
 
+`a34`는 아래 예시에서 쓴 ssh 호스트 별칭이다 — Termux에 `sshd`를 띄우고 `~/.ssh/config`에 자기 폰을 등록한 뒤 그 이름으로 바꾼다.
+
 ```bash
 # 1) 전송 — scp -r 보다 tar 스트림이 빠르고 권한 문제가 없다
-cd ~/projects/03-personal/sllm-machine
+cd <저장소 루트>
 ssh a34 'mkdir -p ~/bench-lab'
 tar czf - bench/bench.sh bench/label_one.py bench/README.md samples/text samples/labels.json \
   | ssh a34 'cd ~/bench-lab && tar xzf - && chmod +x bench/bench.sh && echo OK'
