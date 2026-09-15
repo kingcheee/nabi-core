@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나비 — 지원 기기 · 벤치마크</title>
+<meta name="description" content="버려지는 휴대폰(Galaxy A34 6GB · Note 20 Ultra)에서 같은 소형 언어모델로 같은 서류를 라벨링한 실측값, 스레드 설정 하나로 5.3배가 갈리는 이유, 10분 연속 구동 온도 곡선, 폰에 올리는 법. 외부 API 호출 0.">
+<link rel="stylesheet" href="../assets/app.css">
+<style>
+  /* 이 페이지만의 것 — 공용 규격은 ../assets/app.css. 외부 스크립트·웹폰트·이미지 없음, 그래프는 손으로 쓴 인라인 SVG. */
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  .page-head .jump{display:flex;flex-wrap:wrap;gap:.4rem;margin:1.4rem 0 0}
+  .page-head .jump a{font-size:.82rem;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:.35rem .75rem}
+  .page-head .jump a:hover{color:var(--ink);border-color:var(--line-2);text-decoration:none}
+  .section .sub{max-width:48rem}
+  .section .note{font-size:.9rem;color:var(--muted);max-width:48rem;margin:1rem 0 0}
+  .section .note b{color:var(--ink)}
+  .section .note + .note{margin-top:.6rem}
+  .conds{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem}
+
+  /* 기기 카드 */
+  .dev{display:flex;flex-direction:column;padding:1.25rem}
+  .dev .top{display:flex;align-items:center;justify-content:space-between;margin:0 0 .7rem}
+  .dev .top .ico{color:var(--green);width:1.5rem;height:1.5rem}
+  .dev.soon .top .ico{color:var(--faint)}
+  .dev h3{font-size:1rem;margin:0 0 .15rem}
+  .dev .spec{margin:0;color:var(--muted);font-size:.86rem}
+  .dev .m{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);font-size:.86rem;color:var(--muted);
+          display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .9rem}
+  .dev .m b{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-right:.1rem}
+  .dev .m .lab b{font-size:1.05rem}
+  .dev .s{margin:.3rem 0 0;font-size:.8rem;color:var(--muted)}
+  .dev .s b{color:var(--amber);font-weight:600}
+  .devs{margin:0 0 1.5rem}
+  .section h3.sub-h{margin:1.8rem 0 .8rem}
+
+  /* 실측표 */
+  table.data.bench th,table.data.bench td{white-space:nowrap}   /* 좁은 화면에서 낱말을 쪼개지 않고 표 안에서 가로 스크롤 */
+  table.data td.dev-cell{vertical-align:top;width:30%}
+  table.data td.dev-cell small{display:block;color:var(--muted);font-size:.8rem;margin-top:.1rem}
+  table.data td.warn{color:var(--amber);font-weight:700}
+  .legend-warn{display:inline-block;width:.7rem;height:.7rem;border-radius:3px;background:var(--amber-bg);border:1px solid var(--amber);vertical-align:-.05em;margin-right:.3rem}
+
+  /* 발열 그래프 — 인라인 SVG. x 좌표는 %(가로에 맞춰 늘어남), y 는 px(높이 고정) 라 글자·선 굵기가 화면 폭과 무관하게 같다. */
+  .charts{margin:0 0 1rem}
+  .chart{margin:0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem 1rem .5rem;
+         --series:var(--green)}
+  .chart.secs{--series:var(--blue)}
+  .chart figcaption{display:flex;align-items:baseline;flex-wrap:wrap;gap:.2rem .6rem;margin:0 0 .5rem}
+  .chart figcaption b{font-size:.95rem}
+  .chart figcaption span{font-size:.8rem;color:var(--muted)}
+  .chart svg{display:block;width:100%;height:240px;overflow:visible;font-family:var(--sans)}
+  .chart text{font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+  .chart .unit,.chart .axis-t{font-size:10.5px;fill:var(--faint)}
+  .chart .grid line{stroke:var(--line);stroke-width:1}
+  .chart .grid line.base{stroke:var(--line-2)}
+  .chart .ln line{stroke:var(--series);stroke-width:2;stroke-linecap:round}
+  .chart .pt{outline:none;cursor:default}
+  .chart .pt .hit{fill:transparent}
+  .chart .pt .halo{fill:var(--series);opacity:0;transition:opacity .1s}
+  .chart .pt .dot{fill:var(--series);stroke:#fff;stroke-width:2}
+  .chart .pt .tip{font-size:12px;font-weight:600;fill:var(--ink);stroke:#fff;stroke-width:3.5px;paint-order:stroke;stroke-linejoin:round;
+                  opacity:0;transition:opacity .1s}
+  .chart .pt:hover .tip,.chart .pt:focus .tip,.chart .pt.end .tip{opacity:1}
+  .chart .pt:hover .halo,.chart .pt:focus .halo{opacity:.18}
+  .chart .pt:focus-visible .dot{stroke:var(--ink)}
+
+  /* 폐폰 기준 */
+  .checks{list-style:none;margin:0 0 .8rem;padding:0;display:grid;gap:.45rem;font-size:.92rem}
+  .checks li{display:flex;align-items:center;gap:.5rem}
+  .checks .ico{color:var(--green)}
+  .card h3 .badge{margin-left:.4rem}
+  .card .s{margin:0;font-size:.84rem;color:var(--muted)}
+  .card .big{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin:.2rem 0 .3rem}
+
+  /* 설치 */
+  .cta-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:1.4rem 0 0}
+  .cta-row .fine{font-size:.82rem;color:var(--faint);margin:0 0 0 .3rem}
+
+  @media (min-width:769px) and (max-width:1024px){
+    .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:768px){
+    .chart{padding:.9rem .6rem .4rem}
+    table.data td.dev-cell{width:auto;min-width:9rem}
+    table.data td.dev-cell small{white-space:normal}
+  }
+</style>
+</head>
+<body>
+
+<svg hidden xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#15803d"/><path d="M6.5 8 14 16l-7.5 8z" fill="#fff"/><path d="M25.5 8 18 16l7.5 8z" fill="#fff" opacity=".8"/><path d="M16 7v18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></symbol>
+  <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></symbol>
+</svg>
+
+<header class="site-nav">
+  <div class="in">
+    <a class="brand" href="../"><svg class="mark" aria-hidden="true"><use href="#i-logo"/></svg>나비</a>
+    <nav aria-label="사이트">
+      <a href="../#features">기능</a><a href="../#how">작동 방식</a><a href="../#measured">실측</a><a href="./" aria-current="page">지원 기기</a><a href="../#pricing">요금</a><a href="../#faq">FAQ</a>
+    </nav>
+    <div class="cta">
+      <a class="btn btn-secondary" href="../download/">설치기</a>
+      <a class="btn btn-primary" href="../try/">체험하기</a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="page-head">
+    <p class="eyebrow">지원 기기 · 벤치마크</p>
+    <h1>폐폰에서도 같은 코어가 돕니다</h1>
+    <p class="lede">제품의 본체는 PC입니다. 폰은 「같은 코어가 어디까지 내려가는가」를 보이는 자리입니다 —
+    서랍 속 폐폰 두 대에 같은 모델을 올리고 같은 서류를 라벨링했습니다. 아래는 전부 우리가 직접 잰 값입니다.</p>
+    <div class="jump" aria-label="이 페이지 안">
+      <a href="#devices">기기</a><a href="#measured">실측표 12행</a><a href="#threads">설정 하나로 5.3배</a><a href="#heat">10분 연속 구동</a><a href="#which">어떤 폐폰이면 되나</a><a href="#install">폰에 올리는 법</a>
+    </div>
+  </div>
+
+  <!-- 1 · 기기 -->
+  <section class="section" id="devices">
+    <h2>재 본 기기 셋, 잴 기기 다섯</h2>
+    <p class="sub">같은 스크립트 · 같은 서류 5건 · 같은 모델(MiniCPM5-2B)로 잰 값입니다. 재지 못한 기기는 「예정」으로 남겼습니다.</p>
+
+    <div class="grid grid-3 devs">
+      <article class="card dev">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-monitor"/></svg><span class="badge badge-ready">실측</span></div>
+        <h3>노트북 — Dell Inspiron 7501</h3>
+        <p class="spec">i7-10750H · 16GB · 2020년</p>
+        <div class="m"><span><b>18.7</b>초 / 건</span><span class="lab">라벨 <b>14</b> / 15</span></div>
+        <p class="s">MiniCPM5-2B · 4스레드</p>
+      </article>
+      <article class="card dev">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-smartphone"/></svg><span class="badge badge-ready">실측</span></div>
+        <h3>Galaxy A34</h3>
+        <p class="spec">SM-A346N · 6GB · Dimensity 1080</p>
+        <div class="m"><span><b>89.1</b>초 / 건</span><span class="lab">라벨 <b>12</b> / 15</span></div>
+        <p class="s">MiniCPM5-2B · 8스레드</p>
+      </article>
+      <article class="card dev">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-smartphone"/></svg><span class="badge badge-ready">실측</span></div>
+        <h3>Galaxy Note 20 Ultra</h3>
+        <p class="spec">SM-N986N · 12GB · Snapdragon 865</p>
+        <div class="m"><span><b>81.0</b>초 / 건</span><span class="lab">라벨 <b>13</b> / 15</span></div>
+        <p class="s">MiniCPM5-2B · 빅코어 4스레드 고정 · <b>충전 안 된 상태의 하한값</b></p>
+      </article>
+    </div>
+
+    <h3 class="sub-h">아직 안 잰 기기</h3>
+    <div class="grid grid-4">
+      <div class="card dev soon">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg><span class="badge badge-soon">예정</span></div>
+        <h3>미니PC — Intel N100 8GB</h3>
+        <p class="spec">체험 인스턴스가 될 기기입니다.</p>
+      </div>
+      <div class="card dev soon">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-smartphone"/></svg><span class="badge badge-soon">예정</span></div>
+        <h3>Galaxy S21 Ultra · Galaxy S20</h3>
+        <p class="spec">아직 재지 않았습니다.</p>
+      </div>
+      <div class="card dev soon">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg><span class="badge badge-soon">예정</span></div>
+        <h3>Raspberry Pi 5</h3>
+        <p class="spec">아직 재지 않았습니다.</p>
+      </div>
+      <div class="card dev soon">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-monitor"/></svg><span class="badge badge-soon">예정</span></div>
+        <h3>2013년 이전 구형 데스크톱 (AVX1)</h3>
+        <p class="spec">중고 구매 예정 — 설치기가 「공식 바이너리가 죽는 PC」를 살리는 장면을 여기서 찍습니다.</p>
+      </div>
+    </div>
+
+    <!-- 2 · 영상 자리 -->
+    <div class="callout" style="margin:1.5rem 0 0">
+      <b>영상은 촬영 예정입니다.</b> 폰 터미널에서 서류 5장을 라벨링하는 30초 실측 영상과,
+      중고로 구한 폐PC에 설치기를 돌려 정리까지 가는 데모 영상이 여기와 소개 페이지에 붙습니다.
+    </div>
+  </section>
+
+  <!-- 3 · 실측표 12행 -->
+  <section class="section" id="measured">
+    <h2>실측표 — 같은 스크립트 · 같은 서류 5건 · 같은 모델 두 개</h2>
+    <p class="sub">서류 5건은 임대차계약서(워드) · 통장내역(엑셀) · 급여대장(엑셀) · 근로계약서(워드) · 원천세신고서(한글)입니다.
+    라벨 셋(거래처 · 기간 · 서류 종류)을 맞힌 개수를 15점 만점으로 셉니다. 문서 한 건마다 KV 캐시를 새로 엽니다.</p>
+    <div class="conds" aria-label="실측 설정">
+      <span class="badge badge-gray">컨텍스트 2048</span>
+      <span class="badge badge-gray">마이크로배치 128</span>
+      <span class="badge badge-gray">KV 캐시 f16</span>
+      <span class="badge badge-gray">문서 사이 3초 휴지</span>
+      <span class="badge badge-gray">2026-09-10 실측</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data bench">
+        <thead><tr><th>기기</th><th>모델</th><th>스레드</th><th class="n">건당 초</th><th class="n">라벨 15점</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="4" class="dev-cell">Dell Inspiron 7501<small>i7-10750H · 16GB · 2020년 노트북</small></td><td>MiniCPM5-2B</td><td>4</td><td class="n"><b>18.7</b></td><td class="n"><b>14</b></td></tr>
+          <tr><td>MiniCPM5-2B</td><td>3</td><td class="n">20.2</td><td class="n">14</td></tr>
+          <tr><td>Qwen2.5-1.5B</td><td>4</td><td class="n">13.0</td><td class="n">10</td></tr>
+          <tr><td>Qwen2.5-1.5B</td><td>3</td><td class="n">15.2</td><td class="n">10</td></tr>
+          <tr><td rowspan="4" class="dev-cell">Galaxy A34<small>SM-A346N · 6GB · Dimensity 1080</small></td><td>MiniCPM5-2B</td><td>8</td><td class="n"><b>89.1</b></td><td class="n"><b>12</b></td></tr>
+          <tr><td>MiniCPM5-2B</td><td>2 (빅코어 고정)</td><td class="n">132.8</td><td class="n">12</td></tr>
+          <tr><td>Qwen2.5-1.5B</td><td>8</td><td class="n">69.6</td><td class="n">10</td></tr>
+          <tr><td>Qwen2.5-1.5B</td><td>2 (빅코어 고정)</td><td class="n">91.8</td><td class="n">10</td></tr>
+          <tr><td rowspan="4" class="dev-cell">Galaxy Note 20 Ultra<small>SM-N986N · 12GB · Snapdragon 865</small></td><td>MiniCPM5-2B</td><td>4 (빅코어 고정)</td><td class="n"><b>81.0</b></td><td class="n"><b>13</b></td></tr>
+          <tr><td>MiniCPM5-2B</td><td>8</td><td class="n warn">425.6</td><td class="n">12</td></tr>
+          <tr><td>Qwen2.5-1.5B</td><td>4 (빅코어 고정)</td><td class="n">61.7</td><td class="n">10</td></tr>
+          <tr><td>Qwen2.5-1.5B</td><td>8</td><td class="n warn">362.2</td><td class="n">10</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note"><span class="legend-warn" aria-hidden="true"></span>주황 숫자는 스레드를 코어 수(8)에 맞췄다가 시간이 무너진 회차입니다 — 이유는 <a href="#threads">다음 절</a>에.</p>
+    <p class="note">두 폰 다 MiniCPM5-2B가 Qwen2.5-1.5B보다 정확했습니다. Qwen이 빠르지만 라벨을 더 틀립니다 —
+    라벨링에서는 <b>틀린 라벨이 느린 라벨보다 비쌉니다.</b> 그래서 기본 모델은 MiniCPM5-2B입니다(둘 다 Apache-2.0).</p>
+    <p class="note">Note 20 Ultra는 실측 내내 충전 상태가 아니어서 큰 코어가 최대 클럭의 57%로 묶여 있었습니다.
+    <b>지금 값은 하한입니다</b> — 충전기를 꽂으면 오릅니다. 이 노트북의 llama.cpp는 배포판 디버그 빌드라
+    속도가 보수적으로 나온 값입니다.</p>
+  </section>
+
+  <!-- 4 · 설정 하나로 5.3배 -->
+  <section class="section" id="threads">
+    <h2>설정 하나로 「1분 20초」와 「7분」이 갈립니다</h2>
+    <p class="sub">같은 폰 · 같은 모델 · 같은 서류. 스레드 수 하나가 다릅니다.</p>
+    <div class="grid grid-4" style="margin-bottom:1.5rem">
+      <div class="stat tone-green"><div class="l">빅코어 4스레드 고정</div><div class="n">81.0<small>초 / 건</small></div><div class="s">Note 20 Ultra · MiniCPM5-2B · 라벨 13/15</div></div>
+      <div class="stat tone-amber"><div class="l">코어 수에 맞춘 8스레드</div><div class="n">425.6<small>초 / 건</small></div><div class="s">같은 폰 · 같은 모델 · 라벨 12/15 — 5.3배</div></div>
+      <div class="stat tone-green"><div class="l">llama-bench · 빅코어 4개 고정</div><div class="n">9.21<small>tok/s</small></div><div class="s">토큰 생성 속도</div></div>
+      <div class="stat tone-amber"><div class="l">llama-bench · 8스레드</div><div class="n">0.13<small>tok/s</small></div><div class="s">약 70배 느림</div></div>
+    </div>
+    <div class="prose">
+      <p>Note 20 Ultra에서 서류 한 건이 빅코어 4스레드에서 <b>81.0초</b>, 코어 수에 맞춘 8스레드에서
+      <b>425.6초</b>입니다. 5.3배. Qwen도 같습니다(61.7초 → 362.2초, 5.9배). 라벨 정확도는 13/15와 12/15로 거의 같습니다.
+      즉 같은 폰 · 같은 모델 · 같은 서류인데 <b>설정 하나로 시간이 다섯 배 갈리고 정확도는 그대로</b>입니다.</p>
+      <p>이유는 작은 코어입니다. 스레드를 코어 수에 맞추면 리틀코어 4개가 매 토큰마다 나머지를 기다리게 만들어
+      토큰 생성이 무너집니다 — llama-bench 기준 8스레드 <b>0.13 tok/s</b>, 빅코어 4개 고정 <b>9.21 tok/s</b>, 약 70배.</p>
+      <p><b>그런데 Galaxy A34는 반대입니다.</b> 빅코어 2개에 고정하면 5.63 tok/s, 코어 8개를 다 쓰면 7.29 tok/s가 나옵니다.
+      빅·리틀 클럭 격차가 작아 작은 코어도 제 몫을 합니다. Dimensity 1080의 빅코어는 두 개뿐이라 처음 회차에서
+      2코어에 4스레드를 줬다가 값이 무너져 그 회차를 버렸습니다.</p>
+    </div>
+    <div class="callout" style="max-width:48rem">
+      <b>기기마다 정답이 다릅니다.</b> 그래서 고정된 계산식을 쓰지 않고, 설치할 때 기기에서 직접 짧게 재서 고릅니다.
+      설치기가 이것을 자동으로 고르지 못하면 「폐폰에서도 돕니다」가 「폐폰에서는 못 씁니다」가 됩니다 —
+      버려진 기기를 되살리는 일에서 <a href="../download/">설치기</a>가 본체인 이유입니다.
+    </div>
+  </section>
+
+  <!-- 5 · 발열 10분 -->
+  <section class="section" id="heat">
+    <h2>10분 연속 구동 — 온도가 오르지 않았습니다</h2>
+    <p class="sub">발열은 주장이 아니라 설정과 실측으로 말합니다. 파일 1건 = 세션 1회로 KV 캐시가 쌓이지 않게 하고,
+    스레드는 코어 수보다 적게, 문서 사이 3초를 쉬고, 프롬프트 배치를 128로 제한합니다.
+    이 설정으로 A34에서 10분 연속 라벨링을 돌렸습니다.</p>
+    <div class="conds" aria-label="구동 조건">
+      <span class="badge badge-gray">Galaxy A34</span>
+      <span class="badge badge-gray">빅코어 2스레드</span>
+      <span class="badge badge-gray">3초 휴지</span>
+      <span class="badge badge-gray">충전 중</span>
+      <span class="badge badge-gray">기기가 이미 달궈진 상태에서 시작</span>
+    </div>
+
+    <div class="grid grid-2 charts">
+      <figure class="chart temp">
+        <figcaption><b id="cap-temp">배터리 온도 (°C)</b><span>10분 · 6건 · 각 건이 끝난 시점에 읽은 값</span></figcaption>
+        <svg aria-labelledby="cap-temp" role="group">
+          <g class="grid" aria-hidden="true">
+            <line x1="11%" y1="22" x2="97%" y2="22"/>
+            <line x1="11%" y1="80" x2="97%" y2="80"/>
+            <line x1="11%" y1="138" x2="97%" y2="138"/>
+            <line class="base" x1="11%" y1="196" x2="97%" y2="196"/>
+          </g>
+          <g text-anchor="end" aria-hidden="true">
+            <text class="unit" x="8.6%" y="9">°C</text>
+            <text x="8.6%" y="22" dy=".35em">40</text>
+            <text x="8.6%" y="80" dy=".35em">35</text>
+            <text x="8.6%" y="138" dy=".35em">30</text>
+            <text x="8.6%" y="196" dy=".35em">25</text>
+          </g>
+          <g text-anchor="middle" aria-hidden="true">
+            <text x="11%" y="214">0</text><text x="23.29%" y="214">100</text><text x="35.57%" y="214">200</text><text x="47.86%" y="214">300</text>
+            <text x="60.14%" y="214">400</text><text x="72.43%" y="214">500</text><text x="84.71%" y="214">600</text><text x="97%" y="214">700</text>
+            <text class="axis-t" x="97%" y="232" text-anchor="end">경과 시간 (초)</text>
+          </g>
+          <g class="ln" aria-hidden="true">
+            <line x1="22.43%" y1="126.4" x2="37.05%" y2="127.56"/>
+            <line x1="37.05%" y1="127.56" x2="51.54%" y2="127.56"/>
+            <line x1="51.54%" y1="127.56" x2="67.15%" y2="127.56"/>
+            <line x1="67.15%" y1="127.56" x2="81.03%" y2="128.72"/>
+            <line x1="81.03%" y1="128.72" x2="92.82%" y2="128.72"/>
+          </g>
+          <g class="pt end" tabindex="0" role="img" aria-label="93초 경과, 배터리 31.0도, 1건 완료">
+            <circle class="hit" cx="22.43%" cy="126.4" r="14"/><circle class="halo" cx="22.43%" cy="126.4" r="9"/><circle class="dot" cx="22.43%" cy="126.4" r="4.5"/>
+            <text class="tip" x="22.43%" y="112" text-anchor="middle">31.0°C</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="212초 경과, 배터리 30.9도, 2건 완료">
+            <circle class="hit" cx="37.05%" cy="127.56" r="14"/><circle class="halo" cx="37.05%" cy="127.56" r="9"/><circle class="dot" cx="37.05%" cy="127.56" r="4.5"/>
+            <text class="tip" x="37.05%" y="113" text-anchor="middle">212초 · 30.9°C</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="330초 경과, 배터리 30.9도, 3건 완료">
+            <circle class="hit" cx="51.54%" cy="127.56" r="14"/><circle class="halo" cx="51.54%" cy="127.56" r="9"/><circle class="dot" cx="51.54%" cy="127.56" r="4.5"/>
+            <text class="tip" x="51.54%" y="113" text-anchor="middle">330초 · 30.9°C</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="457초 경과, 배터리 30.9도, 4건 완료">
+            <circle class="hit" cx="67.15%" cy="127.56" r="14"/><circle class="halo" cx="67.15%" cy="127.56" r="9"/><circle class="dot" cx="67.15%" cy="127.56" r="4.5"/>
+            <text class="tip" x="67.15%" y="113" text-anchor="middle">457초 · 30.9°C</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="570초 경과, 배터리 30.8도, 5건 완료">
+            <circle class="hit" cx="81.03%" cy="128.72" r="14"/><circle class="halo" cx="81.03%" cy="128.72" r="9"/><circle class="dot" cx="81.03%" cy="128.72" r="4.5"/>
+            <text class="tip" x="81.03%" y="114" text-anchor="middle">570초 · 30.8°C</text>
+          </g>
+          <g class="pt end" tabindex="0" role="img" aria-label="666초 경과, 배터리 30.8도, 6건 완료">
+            <circle class="hit" cx="92.82%" cy="128.72" r="14"/><circle class="halo" cx="92.82%" cy="128.72" r="9"/><circle class="dot" cx="92.82%" cy="128.72" r="4.5"/>
+            <text class="tip" x="92.82%" y="114" text-anchor="middle">30.8°C</text>
+          </g>
+        </svg>
+      </figure>
+
+      <figure class="chart secs">
+        <figcaption><b id="cap-secs">건당 초</b><span>그 건의 라벨링에 걸린 시간 (초)</span></figcaption>
+        <svg aria-labelledby="cap-secs" role="group">
+          <g class="grid" aria-hidden="true">
+            <line x1="11%" y1="22" x2="97%" y2="22"/>
+            <line x1="11%" y1="80" x2="97%" y2="80"/>
+            <line x1="11%" y1="138" x2="97%" y2="138"/>
+            <line class="base" x1="11%" y1="196" x2="97%" y2="196"/>
+          </g>
+          <g text-anchor="end" aria-hidden="true">
+            <text class="unit" x="8.6%" y="9">초</text>
+            <text x="8.6%" y="22" dy=".35em">150</text>
+            <text x="8.6%" y="80" dy=".35em">100</text>
+            <text x="8.6%" y="138" dy=".35em">50</text>
+            <text x="8.6%" y="196" dy=".35em">0</text>
+          </g>
+          <g text-anchor="middle" aria-hidden="true">
+            <text x="11%" y="214">0</text><text x="23.29%" y="214">100</text><text x="35.57%" y="214">200</text><text x="47.86%" y="214">300</text>
+            <text x="60.14%" y="214">400</text><text x="72.43%" y="214">500</text><text x="84.71%" y="214">600</text><text x="97%" y="214">700</text>
+            <text class="axis-t" x="97%" y="232" text-anchor="end">경과 시간 (초)</text>
+          </g>
+          <g class="ln" aria-hidden="true">
+            <line x1="22.43%" y1="89.51" x2="37.05%" y2="62.72"/>
+            <line x1="37.05%" y1="62.72" x2="51.54%" y2="63.3"/>
+            <line x1="51.54%" y1="63.3" x2="67.15%" y2="53.44"/>
+            <line x1="67.15%" y1="53.44" x2="81.03%" y2="68.52"/>
+            <line x1="81.03%" y1="68.52" x2="92.82%" y2="89.63"/>
+          </g>
+          <g class="pt end" tabindex="0" role="img" aria-label="93초 경과, 1건째 91.8초">
+            <circle class="hit" cx="22.43%" cy="89.51" r="14"/><circle class="halo" cx="22.43%" cy="89.51" r="9"/><circle class="dot" cx="22.43%" cy="89.51" r="4.5"/>
+            <text class="tip" x="22.43%" y="110" text-anchor="middle">91.8초</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="212초 경과, 2건째 114.9초">
+            <circle class="hit" cx="37.05%" cy="62.72" r="14"/><circle class="halo" cx="37.05%" cy="62.72" r="9"/><circle class="dot" cx="37.05%" cy="62.72" r="4.5"/>
+            <text class="tip" x="37.05%" y="48" text-anchor="middle">212초 · 114.9초</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="330초 경과, 3건째 114.4초">
+            <circle class="hit" cx="51.54%" cy="63.3" r="14"/><circle class="halo" cx="51.54%" cy="63.3" r="9"/><circle class="dot" cx="51.54%" cy="63.3" r="4.5"/>
+            <text class="tip" x="51.54%" y="49" text-anchor="middle">330초 · 114.4초</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="457초 경과, 4건째 122.9초">
+            <circle class="hit" cx="67.15%" cy="53.44" r="14"/><circle class="halo" cx="67.15%" cy="53.44" r="9"/><circle class="dot" cx="67.15%" cy="53.44" r="4.5"/>
+            <text class="tip" x="67.15%" y="39" text-anchor="middle">457초 · 122.9초</text>
+          </g>
+          <g class="pt" tabindex="0" role="img" aria-label="570초 경과, 5건째 109.9초">
+            <circle class="hit" cx="81.03%" cy="68.52" r="14"/><circle class="halo" cx="81.03%" cy="68.52" r="9"/><circle class="dot" cx="81.03%" cy="68.52" r="4.5"/>
+            <text class="tip" x="81.03%" y="54" text-anchor="middle">570초 · 109.9초</text>
+          </g>
+          <g class="pt end" tabindex="0" role="img" aria-label="666초 경과, 6건째 91.7초">
+            <circle class="hit" cx="92.82%" cy="89.63" r="14"/><circle class="halo" cx="92.82%" cy="89.63" r="9"/><circle class="dot" cx="92.82%" cy="89.63" r="4.5"/>
+            <text class="tip" x="92.82%" y="110" text-anchor="middle">91.7초</text>
+          </g>
+        </svg>
+      </figure>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th class="n">경과 (초)</th><th class="n">배터리 온도 (°C)</th><th class="n">완료 건수</th><th class="n">그 건의 초</th></tr></thead>
+        <tbody>
+          <tr><td class="n">93</td><td class="n">31.0</td><td class="n">1</td><td class="n">91.8</td></tr>
+          <tr><td class="n">212</td><td class="n">30.9</td><td class="n">2</td><td class="n">114.9</td></tr>
+          <tr><td class="n">330</td><td class="n">30.9</td><td class="n">3</td><td class="n">114.4</td></tr>
+          <tr><td class="n">457</td><td class="n">30.9</td><td class="n">4</td><td class="n">122.9</td></tr>
+          <tr><td class="n">570</td><td class="n">30.8</td><td class="n">5</td><td class="n">109.9</td></tr>
+          <tr><td class="n">666</td><td class="n">30.8</td><td class="n">6</td><td class="n">91.7</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note"><b>10분 동안 온도가 오르지 않았습니다</b> — 31.0 → 30.8°C. 건당 시간도 첫 건 91.8초, 마지막 건 91.7초로
+    평탄합니다(중간 변동은 서류 길이 차이입니다). 못 잰 것도 적어 둡니다: CPU 클럭 하락은 이 회차에서 직접 재지
+    못했고(도구 결함, 다음 회차 몫), 휴지 없는 대조는 실측 중이며, 더 빠른 8스레드 조건은 재지 않았습니다.</p>
+  </section>
+
+  <!-- 6 · 어떤 폐폰이면 되나 -->
+  <section class="section" id="which">
+    <h2>어떤 폐폰이면 되나</h2>
+    <p class="sub">실측으로 확인한 것과 조사로 잡은 것을 나눠 적습니다.</p>
+    <div class="grid grid-2" style="margin-bottom:1.5rem">
+      <div class="card">
+        <h3>실제로 돌린 가장 낮은 폰 <span class="badge badge-ready">실측</span></h3>
+        <p class="big">Galaxy A34 · 6GB</p>
+        <p class="s">같은 서류 5건을 89.1초 / 건, 라벨 12 / 15로 라벨링했습니다. 10분 연속 구동에서 온도가 오르지 않았습니다.</p>
+      </div>
+      <div class="card">
+        <h3>기준선 <span class="badge badge-gray">조사 기준</span></h3>
+        <ul class="checks">
+          <li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>RAM 6GB 이상</li>
+          <li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>ARMv8.2 + dotprod</li>
+          <li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>2019년 이후 칩셋</li>
+        </ul>
+        <p class="s">4GB 이하는 안드로이드 메모리 킬러가 프로세스를 죽입니다. 이 기준선은 기기를 늘려 가며 실측으로 확인합니다.</p>
+      </div>
+    </div>
+    <div class="prose">
+      <p>폰은 상시 워커가 아닙니다. 온디바이스 생성은 원격 호출보다 에너지를 훨씬 많이 쓰고 배터리에 무리가 갑니다.
+      전원에 꽂힌 기기 — PC — 가 우리 자리이고, 폰은 같은 코어가 거기까지 내려간다는 증거입니다.</p>
+    </div>
+  </section>
+
+  <!-- 7 · 폰에 올리는 법 -->
+  <section class="section" id="install">
+    <h2>폰에 올리는 법</h2>
+    <p class="sub">Termux(F-Droid 판 — 플레이스토어 판은 낡아서 안 됩니다)에서 합니다. 모델 파일은 약 1.7GB라 와이파이에서 받습니다.</p>
+<pre># 한 번만
+pkg update -y &amp;&amp; pkg install -y llama-cpp curl python termux-api
+termux-wake-lock                       # 화면이 꺼져도 안 멈추게. 충전기를 꽂는다
+
+# 빅코어가 몇 개, 몇 번인지 본다 (최대 클럭이 가장 높은 묶음이 빅코어)
+for c in /sys/devices/system/cpu/cpu[0-9]*; do
+  echo "$(basename $c) $(($(cat $c/cpufreq/cpuinfo_max_freq 2>/dev/null || echo 0)/1000))MHz"; done
+
+# 모델 서버 — 빅코어 4개(cpu4~7)에 4스레드를 고정하는 예. A34처럼 빅코어가 2개면 "6,7" 에 2스레드
+taskset -c 4-7 llama-server -m MiniCPM5-2B-Q4_K_M.gguf --host 127.0.0.1 --port 8097 \
+  -c 2048 -ub 128 -t 4 --no-warmup</pre>
+    <p class="note" style="margin-top:0">스레드 수를 코어 개수보다 크게 주지 마세요 — 2코어에 4스레드를 몰아넣으면 생성이 무너집니다.
+    설치기는 이 판단을 자동으로 합니다. 실측 스크립트(같은 서류 5건 · 모델 두 개 · 온도 곡선)는 저장소 공개와 함께 여기에 붙습니다.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="../download/"><svg class="ico sm" aria-hidden="true"><use href="#i-download"/></svg>PC에는 설치기로</a>
+      <a class="btn btn-secondary" href="../try/">체험하기</a>
+      <p class="fine">서류는 기기를 떠나지 않습니다 · 외부 API 호출 0</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="in">
+    <a class="brand" href="../"><svg class="mark" aria-hidden="true"><use href="#i-logo"/></svg>나비</a>
+    <div class="links"><a href="../try/">체험</a><a href="../download/">설치기</a><a href="./">지원 기기 · 벤치마크</a><span>라이선스 Apache-2.0</span><span>2026 인공지능사관학교 파이널 팀</span></div>
+    <p class="note">이 페이지의 숫자는 전부 우리가 잰 값입니다. 재지 못한 칸은 「예정」으로 남겼습니다.</p>
+  </div>
+</footer>
+
+</body>
+</html>
