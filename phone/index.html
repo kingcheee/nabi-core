@@ -131,10 +131,17 @@
 
   <!-- 1 · 기기 -->
   <section class="section" id="devices">
-    <h2>재 본 기기 셋, 잴 기기 다섯</h2>
+    <h2>재 본 기기 넷, 잴 기기 넷</h2>
     <p class="sub">같은 스크립트 · 같은 서류 5건 · 같은 모델(MiniCPM5-2B)로 잰 값입니다. 재지 못한 기기는 「예정」으로 남겼습니다.</p>
 
-    <div class="grid grid-3 devs">
+    <div class="grid grid-2 devs">
+      <article class="card dev">
+        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg><span class="badge badge-ready">실측</span></div>
+        <h3>미니PC — Intel N100 8GB</h3>
+        <p class="spec">Intel N100 · 8GB 싱글채널 · 체험 인스턴스</p>
+        <div class="m"><span><b>39.4</b>초 / 건</span><span class="lab">라벨 <b>13</b> / 15</span></div>
+        <p class="s">MiniCPM5-2B · 3스레드 · 2026-09-16</p>
+      </article>
       <article class="card dev">
         <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-monitor"/></svg><span class="badge badge-ready">실측</span></div>
         <h3>노트북 — Dell Inspiron 7501</h3>
@@ -159,12 +166,7 @@
     </div>
 
     <h3 class="sub-h">아직 안 잰 기기</h3>
-    <div class="grid grid-4">
-      <div class="card dev soon">
-        <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg><span class="badge badge-soon">예정</span></div>
-        <h3>미니PC — Intel N100 8GB</h3>
-        <p class="spec">체험 인스턴스가 될 기기입니다.</p>
-      </div>
+    <div class="grid grid-3">
       <div class="card dev soon">
         <div class="top"><svg class="ico" aria-hidden="true"><use href="#i-smartphone"/></svg><span class="badge badge-soon">예정</span></div>
         <h3>Galaxy S21 Ultra · Galaxy S20</h3>
@@ -217,9 +219,11 @@
           <tr><td>MiniCPM5-2B</td><td>8</td><td class="n warn">425.6</td><td class="n">12</td></tr>
           <tr><td>Qwen2.5-1.5B</td><td>4 (빅코어 고정)</td><td class="n">61.7</td><td class="n">10</td></tr>
           <tr><td>Qwen2.5-1.5B</td><td>8</td><td class="n warn">362.2</td><td class="n">10</td></tr>
+          <tr><td class="dev-cell">Intel N100 8GB<small>미니PC · 8GB 싱글채널 · 체험 인스턴스</small></td><td>MiniCPM5-2B</td><td>3</td><td class="n"><b>39.4</b></td><td class="n"><b>13</b></td></tr>
         </tbody>
       </table>
     </div>
+    <p class="note">미니PC(Intel N100) 행은 <b>2026-09-16</b>에 같은 스크립트·같은 서류 5건으로 체험 인스턴스에서 잰 값입니다(단채널 DDR4 8GB · 3스레드). 나머지 행은 2026-09-10 실측입니다.</p>
     <p class="note"><span class="legend-warn" aria-hidden="true"></span>주황 숫자는 스레드를 코어 수(8)에 맞췄다가 시간이 무너진 회차입니다 — 이유는 <a href="#threads">다음 절</a>에.</p>
     <p class="note">두 폰 다 MiniCPM5-2B가 Qwen2.5-1.5B보다 정확했습니다. Qwen이 빠르지만 라벨을 더 틀립니다 —
     라벨링에서는 <b>틀린 라벨이 느린 라벨보다 비쌉니다.</b> 그래서 기본 모델은 MiniCPM5-2B입니다(둘 다 Apache-2.0).</p>
