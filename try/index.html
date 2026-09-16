@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>나비 — 받은 서류함</title>
 <meta name="description" content="나비 앱 화면 — 받은 서류함 · 확인 큐 · 정리된 서류 · 거래처 · 기기. 체험 인스턴스에서는 샘플 서류 22건을 소형 언어모델이 라벨링한 결과를 그대로 보여주고, 승인하면 표준 폴더로 정리됩니다. 외부 API 호출 0.">
+<!-- 체험 인스턴스 주소 — 같은 origin(./api)이 먼저, 안 되면 이 주소(정적 호스팅에서 인스턴스를 따로 둘 때), 둘 다 없으면 recorded.json 읽기 전용 -->
+<meta name="nabi-api" content="https://turtle-jiwoo.tailb0e058.ts.net/">
 <link rel="stylesheet" href="../assets/app.css">
 <style>
   /* 이 화면만의 소소한 것 — 공용 규격은 ../assets/app.css */
@@ -99,6 +101,14 @@
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
   const BASE = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
+  // 인스턴스 주소 — 같은 origin(./api)이 먼저, 안 되면 <meta name="nabi-api">, 둘 다 없으면 recorded.json 읽기 전용
+  const META_API = ((document.querySelector('meta[name="nabi-api"]') || {}).content || '').trim();
+  let apiBase = BASE;                                   // 지금 쓰는 API 주소(끝에 /)
+  const SKEY = 'nabi.session@' + META_API;
+  const crossOrigin = () => apiBase !== BASE;
+  // 정적 호스팅에서 인스턴스를 부르면 제3자 쿠키가 막힐 수 있어 세션을 헤더로 되돌려 준다
+  function savedSession() { try { return crossOrigin() ? (localStorage.getItem(SKEY) || '') : ''; } catch (e) { return ''; } }
+  function remember(tok) { if (!crossOrigin() || !tok) return; try { localStorage.setItem(SKEY, tok); } catch (e) {} }
   const HOW = {exact: '등록 거래처명과 일치', alias: '등록된 별칭으로 대조', fuzzy: '등록 목록과 근사 매칭', none: '등록 목록에 없음'};
   const STATE = {ready: '확정', held: '보류', approved: '이동완료', rejected: '거절', skipped: '건너뜀'};
   const AXES = [['client', '거래처'], ['category', '분류'], ['doc_type', '서류 종류'], ['period', '기간']];
@@ -118,21 +128,33 @@
 
   // ---------------------------------------------------------- 서버
   async function api(path, opts) {
-    const r = await fetch(BASE + 'api' + path, Object.assign({credentials: 'same-origin'}, opts || {}));
+    const o = Object.assign({credentials: crossOrigin() ? 'omit' : 'same-origin'}, opts || {});
+    const tok = savedSession();
+    if (tok) o.headers = Object.assign({}, o.headers || {}, {'X-Nabi-Session': tok});
+    const r = await fetch(apiBase + 'api' + path, o);
     let body = null;
     try { body = await r.json(); } catch (e) { body = null; }
     if (!r.ok) throw new Error((body && body.error) || ('HTTP ' + r.status));
+    if (body && body.session) remember(body.session);
     return body;
   }
   const post = (path, data) => api(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data || {})});
 
   async function load() {
-    try {
-      st = await api('/state');
+    const bases = [BASE];
+    if (META_API) { const m = new URL(META_API, location.href).href; if (m !== new URL(BASE, location.href).href) bases.push(m); }
+    let got = null;
+    for (const b of bases) {
+      apiBase = b;
+      try { got = await api('/state'); break; } catch (e) { got = null; }
+    }
+    if (got) {
+      st = got;
       readonly = false;
       $('#banner').hidden = true;
-    } catch (e) {
+    } else {
       // 체험 인스턴스가 없다 — 정적 파일의 미리 잰 결과만 읽기 전용으로 보여준다
+      apiBase = BASE;
       const rec = await (await fetch(BASE + 'recorded.json', {cache: 'no-cache'})).json();
       st = offline(rec);
       readonly = true;
@@ -619,7 +641,7 @@
     let r;
     try { r = await post('/docs/' + d.id + '/relabel'); } catch (e) { toast(e.message, 'err'); return; }
     say('<span class="pulse"></span>줄을 섰습니다…');
-    es = new EventSource(BASE + 'api/jobs/' + r.job + '/events');
+    es = new EventSource(apiBase + 'api/jobs/' + r.job + '/events');
     es.addEventListener('state', async ev => {
       const j = JSON.parse(ev.data);
       if (j.state === 'queued') say('<span class="pulse"></span>앞에 ' + j.position + '건 · ' + j.elapsed_s.toFixed(0) + '초 대기');
