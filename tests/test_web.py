@@ -303,6 +303,82 @@ def test_정적_파일을_서빙하고_상위_경로_탈출을_막는다(demo):
     assert v.req("GET", "/%EC%97%86%EB%8A%94-%ED%8E%98%EC%9D%B4%EC%A7%80", raw=True)[0] == 404
 
 
+# ---------------------------------------------------------------- 교차 출처 (정적 호스팅 + 인스턴스가 다른 origin)
+
+def raw(srv, method, path, headers=None, body=None):
+    """쿠키를 안 들고 가는 날것 요청 — (status, headers dict, body bytes)."""
+    c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+    data = json.dumps(body).encode() if body is not None else None
+    h = dict(headers or {})
+    if data is not None:
+        h["Content-Type"] = "application/json"
+    c.request(method, path, body=data, headers=h)
+    r = c.getresponse()
+    return r.status, {k.lower(): v for k, v in r.getheaders()}, r.read()
+
+
+@pytest.fixture
+def cors_demo(tmp_path, samples, recorded_path):
+    cfg = Config(site_dir=SITE, mode="demo", samples_dir=samples, recorded_path=recorded_path,
+                 sessions_dir=tmp_path / "sessions", labeler=fake_labeler, health=lambda: True,
+                 cors_origins=["https://kingcheee.github.io"])
+    srv = start(cfg)
+    yield srv
+    srv.shutdown()
+
+
+def test_허용된_출처에만_CORS_헤더를_주고_프리플라이트에_답한다(cors_demo, demo):
+    ok = "https://kingcheee.github.io"
+    # 프리플라이트
+    st, h, _ = raw(cors_demo, "OPTIONS", "/try/api/docs/x/approve",
+                   {"Origin": ok, "Access-Control-Request-Method": "POST",
+                    "Access-Control-Request-Headers": "content-type, x-nabi-session"})
+    assert st == 204
+    assert h["access-control-allow-origin"] == ok
+    assert "POST" in h["access-control-allow-methods"]
+    assert "x-nabi-session" in h["access-control-allow-headers"].lower()
+    assert "content-type" in h["access-control-allow-headers"].lower()
+    # 실제 요청 — JSON 과 SSE 모두
+    st, h, _ = raw(cors_demo, "GET", "/try/api/state", {"Origin": ok})
+    assert st == 200 and h["access-control-allow-origin"] == ok and "origin" in h["vary"].lower()
+    st, h, _ = raw(cors_demo, "GET", "/try/api/health", {"Origin": ok})
+    assert h["access-control-allow-origin"] == ok
+    # 다른 출처 · 설정 없는 서버 → 헤더 없음
+    st, h, _ = raw(cors_demo, "GET", "/try/api/state", {"Origin": "https://evil.example"})
+    assert st == 200 and "access-control-allow-origin" not in h
+    st, h, _ = raw(cors_demo, "OPTIONS", "/try/api/state", {"Origin": "https://evil.example",
+                                                             "Access-Control-Request-Method": "GET"})
+    assert st == 403
+    st, h, _ = raw(demo, "GET", "/try/api/state", {"Origin": ok})
+    assert st == 200 and "access-control-allow-origin" not in h
+
+
+def test_세션은_쿠키_없이_헤더나_쿼리로도_이어진다(cors_demo):
+    """정적 호스팅에서 온 방문자는 제3자 쿠키가 막힐 수 있다 — 상태 응답의 session 을 헤더로 되돌려 준다."""
+    st, h, body = raw(cors_demo, "GET", "/try/api/state")
+    first = json.loads(body)
+    tok = first["session"]
+    assert tok and h.get("set-cookie", "").startswith("nabi_session=")
+    ready = next(d for d in first["docs"] if d["name"] == "급여 3월 최종(2).xlsx")
+    # 헤더로 같은 샌드박스에 승인
+    st, _, body = raw(cors_demo, "POST", f"/try/api/docs/{ready['id']}/approve", {"X-Nabi-Session": tok}, {})
+    assert st == 200, body
+    st, _, body = raw(cors_demo, "GET", "/try/api/state", {"X-Nabi-Session": tok})
+    same = json.loads(body)
+    assert same["session"] == tok and same["moves"] == 1
+    # 쿼리로도
+    st, _, body = raw(cors_demo, "GET", f"/try/api/state?session={tok}")
+    assert json.loads(body)["moves"] == 1
+    # 아무것도 없으면 새 방문자
+    st, _, body = raw(cors_demo, "GET", "/try/api/state")
+    other = json.loads(body)
+    assert other["session"] != tok and other["moves"] == 0
+    # 모르는 토큰이면 새로 발급하고 응답에 알려 준다
+    st, h, body = raw(cors_demo, "GET", "/try/api/state", {"X-Nabi-Session": "nope"})
+    fresh = json.loads(body)
+    assert fresh["session"] not in ("nope", tok) and h.get("set-cookie", "").startswith("nabi_session=")
+
+
 # ---------------------------------------------------------------- 로컬 모드
 
 def test_로컬_모드는_작업공간_하나를_쓰고_스캔이_큐를_채운다(tmp_path):

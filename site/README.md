@@ -94,7 +94,7 @@ curl -sI https://kingcheee.github.io/nabi-core/ | head -1                       
 ```
 
 - 도메인을 사면: gh-pages 루트에 `CNAME` 파일(도메인 한 줄) + DNS `CNAME → kingcheee.github.io.` → 저장소 Settings → Pages에서 Enforce HTTPS. 제출 링크만 바꾸면 되고 사이트는 손댈 것 없다.
-- 체험 인스턴스를 살리려면(선택): 우리 기기의 `python3 -m web --demo`를 HTTPS로 노출하고 `/try`가 그 주소를 부르게 해야 한다 — GitHub Pages는 rewrite가 없어 **CORS + API 주소 설정**이 필요하다(미구현, 2026-09-16 기준). Vercel로 옮기면 `vercel.json` rewrite(`/try/api/:path*` → 인스턴스)로 CORS 없이 된다.
+- **체험 인스턴스**(2026-09-16부터): `try/index.html`의 `<meta name="nabi-api">`가 인스턴스 주소다. 화면은 같은 origin(`./api`)을 먼저 시도하고, 안 되면(GitHub Pages) 그 주소를 부르고, 둘 다 없으면 `recorded.json` 읽기 전용. 인스턴스 쪽은 `python3 -m web --demo --cors-origin https://kingcheee.github.io`로 그 origin을 허용하고(프리플라이트·`Access-Control-Allow-Origin`), 제3자 쿠키가 막힌 브라우저를 위해 세션은 `X-Nabi-Session` 헤더로 이어진다(화면이 localStorage에 보관). HTTPS 노출은 Tailscale Funnel(`tailscale funnel --bg 8098`).
 - 시연 영상은 `assets/nabi-demo.mp4`(11MB, 같은 origin, `preload="none"`)와 포스터 `assets/nabi-demo-poster.jpg`. 유튜브 `https://youtu.be/Y4yoZT6KcuE`는 링크만 — 임베드(외부 스크립트) 안 한다.
 
 ## 손대기 전에

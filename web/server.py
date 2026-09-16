@@ -6,8 +6,9 @@
     python3 -m web --demo                 # 체험(/try): 샘플 22건 · 업로드 없음 · 방문자별 샌드박스 · 미리 잰 결과
     python3 -m web --workspace ~/nabi     # 설치된 PC 의 로컬 UI: 작업공간 하나 · inbox 스캔 · 실제 파일
 
-API 는 `/api/...` 와 `/try/api/...` 둘 다 받는다. 정적 호스팅(Vercel)에서 `/try/api/*` 만 이 서버로
-rewrite 하면 한 도메인 네 경로가 된다(`site/README.md`). 엔진은 그대로 부른다 — 여기엔 판정 로직이 없다.
+API 는 `/api/...` 와 `/try/api/...` 둘 다 받는다. 정적 호스팅(GitHub Pages)이 다른 origin 이면 `--cors-origin` 으로
+그 origin 을 허용하고, 화면은 `<meta name="nabi-api">` 로 이 서버를 부른다(`site/README.md`). 제3자 쿠키가 막힌
+브라우저를 위해 세션은 쿠키 말고 `X-Nabi-Session` 헤더·`?session=` 쿼리로도 이어진다. 엔진은 그대로 부른다 — 여기엔 판정 로직이 없다.
 
     GET  /api/health                 모드·기기·모델 생존·대기열
     GET  /api/state                  큐 전체 + 정리된 트리 (체험이면 세션을 만들고 쿠키를 준다)
@@ -36,7 +37,7 @@ from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Callable
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -72,6 +73,7 @@ class Config:
     health: Callable[[], bool] | None = None  # 모델 서버 생존 확인. 기본은 llama-server /health
     session_ttl_s: int = 7200
     max_sessions: int = 200
+    cors_origins: list[str] = field(default_factory=list)   # 정적 호스팅에서 API 를 부를 때 허용할 origin (예: https://kingcheee.github.io)
 
     def __post_init__(self):
         self.site_dir = Path(self.site_dir).resolve()
@@ -364,6 +366,31 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         self._dispatch("POST")
 
+    def do_OPTIONS(self):                                    # CORS 프리플라이트 — 허용 origin 에만
+        if not self._cors_origin():
+            self.send_response(403)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Nabi-Session")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    def _cors_origin(self) -> str | None:
+        headers = getattr(self, "headers", None)
+        origin = headers.get("Origin") if headers else None
+        return origin if origin and origin in self.server.app.cfg.cors_origins else None
+
+    def end_headers(self):                                   # 모든 응답(JSON·SSE·정적·오류)에 같은 CORS 헤더
+        origin = self._cors_origin()
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+        super().end_headers()
+
     def _dispatch(self, method: str) -> None:
         app = self.server.app
         path = urlsplit(self.path).path
@@ -399,6 +426,13 @@ class Handler(BaseHTTPRequestHandler):
         self._send_json(404, {"ok": False, "error": "없는 API"})
 
     def _token(self) -> str | None:
+        """세션 토큰 — 헤더 → 쿼리 → 쿠키 순. 정적 호스팅에서 온 방문자는 제3자 쿠키가 막힐 수 있어 헤더로 되돌려 준다."""
+        h = (self.headers.get("X-Nabi-Session") or "").strip()
+        if h:
+            return h
+        q = parse_qs(urlsplit(self.path).query).get("session")
+        if q and q[0].strip():
+            return q[0].strip()
         raw = self.headers.get("Cookie")
         if not raw:
             return None

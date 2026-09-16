@@ -36,6 +36,8 @@ def main() -> int:
     ap.add_argument("--recorded", type=Path, default=ROOT / "site" / "try" / "recorded.json")
     ap.add_argument("--sessions", type=Path, default=ROOT / "web" / ".sessions")
     ap.add_argument("--ttl", type=int, default=7200, help="샌드박스 유지 시간(초)")
+    ap.add_argument("--cors-origin", action="append", default=[], metavar="ORIGIN",
+                    help="이 origin 의 정적 사이트가 API 를 부르게 허용한다(반복 가능). 예: https://kingcheee.github.io")
     ap.add_argument("--verbose", action="store_true")
     a = ap.parse_args()
 
@@ -45,16 +47,18 @@ def main() -> int:
             return 2
         cfg = Config(site_dir=a.site, mode="demo", samples_dir=a.samples, recorded_path=a.recorded,
                      sessions_dir=a.sessions, model=a.model, model_url=a.url, device=a.device,
-                     session_ttl_s=a.ttl)
+                     session_ttl_s=a.ttl, cors_origins=a.cors_origin)
     else:
         cfg = Config(site_dir=a.site, mode="local", workspace=a.workspace, model=a.model, model_url=a.url,
-                     device=a.device)
+                     device=a.device, cors_origins=a.cors_origin)
 
     srv = make_server(cfg, host=a.host, port=a.port, quiet=not a.verbose)
     host, port = srv.server_address[:2]
     shown = "127.0.0.1" if host in ("0.0.0.0", "::") else host
     print(f"{'체험' if a.demo else '로컬'} 모드 — http://{shown}:{port}/  (체험 화면 /try/)")
     print(f"모델 서버 {a.url}: {'응답' if health(a.url, timeout=2) else '없음 — 「다시 재기」는 실패로 끝난다'}")
+    if a.cors_origin:
+        print(f"CORS 허용 origin: {', '.join(a.cors_origin)}")
     if a.demo:
         print(f"샌드박스: {a.sessions}  (유지 {a.ttl}초)")
     try:
