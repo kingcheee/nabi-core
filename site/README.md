@@ -4,7 +4,7 @@
 
 | 경로 | 무엇 | 어디서 도나 | 상태 |
 |---|---|---|---|
-| `/` | 제품 랜딩 — 히어로·제품 스크린샷·문제 한 줄·작동 방식·기능·AI 활용 방식·실측·지원 기기·요금(가격 없음)·FAQ·도구·라이선스 | **정적 호스팅**(Vercel) | ✅ `index.html` (파일 하나, CSS 인라인, 외부 자원 0) |
+| `/` | 제품 랜딩 — 히어로·시연 영상·문제 한 줄·작동 방식·기능·AI 활용 방식·실측·지원 기기·요금(가격 없음)·FAQ·도구·라이선스 | **정적 호스팅**(GitHub Pages) | ✅ `index.html` (파일 하나, CSS 인라인, 외부 자원 0) |
 | `/try` | **앱 대시보드** — 대시보드 / 받은 서류함 / 확인 큐 / 정리된 서류 / 거래처 / 기기. 설치된 PC의 로컬 화면과 같은 화면 | 화면은 정적, API만 인스턴스 | ✅ `try/index.html` + `try/recorded.json` — 서버는 `web/` |
 | `/download` | 설치 — OS 카드 3(준비 중)·요구 사양·설치하면 생기는 것·흐름·개발자 명령·라이선스 | 정적 호스팅 | ✅ 페이지. **zip은 준비 중** |
 | `/phone` | 지원 기기 · 벤치마크 — 기기 카드·실측표 12행·설정 하나로 5.3배·발열 SVG 그래프·폐폰 기준선·Termux 절차 | 정적 호스팅 | ✅ 페이지. **영상은 촬영 예정** |
@@ -77,18 +77,25 @@ NODE_PATH=<playwright가 있는 node_modules> node tools/site_shots.js <출력�
 「외부 API 호출 0」이라고 적어 놓은 페이지가 남의 서버를 부르면 안 된다. 다른 세 페이지도 외부 자원을 쓰지 않는다.
 자동 평가기가 읽을 텍스트(문제 정의 · AI 활용 방식 · 사용 도구·라이선스)는 랜딩 본문에 그대로 있다.
 
-## 배포 (도메인이 생기면 — 2026-09-11 현재 로컬만)
+## 배포 — GitHub Pages (2026-09-16 현재 이것이 제출 링크)
 
-1. `site/`를 Vercel 프로젝트 루트로 올린다(빌드 없음).
-2. N100의 `python3 -m web --demo --host 0.0.0.0 --port 8098`을 HTTPS로 노출한다(Tailscale Funnel 등).
-3. `site/vercel.json`에 API만 프록시한다 — 화면은 Vercel이, API는 N100이:
+**공개 주소 `https://kingcheee.github.io/nabi-core/`** — 공개 저장소 `kingcheee/nabi-core`의 `gh-pages` 브랜치(루트 = 이 `site/` 폴더 내용)를 GitHub Pages가 그대로 서빙한다. 빌드 없음. 네 경로 전부 상대 링크라 `/nabi-core/` 하위 경로에서도 산다. `/try/`는 API가 없으므로 미리 잰 22건을 읽기 전용으로 보여준다(배너).
 
-```json
-{ "rewrites": [ { "source": "/try/api/:path*", "destination": "https://<N100 주소>/api/:path*" } ] }
+갱신 절차 — 이 repo의 `site/`를 고친 뒤:
+
+```bash
+cd ~/projects/03-personal/sllm-machine && python3 -m pytest tests/test_web.py -q      # 사이트 200·<h1>
+rsync -a --delete --exclude README.md site/ ../nabi-core/site/                         # 공개 repo main 에 복사
+cd ../nabi-core && git add site && git commit -m "site: …" && git push origin main
+git worktree add /tmp/nabi-ghp gh-pages && rsync -a --delete --exclude .git site/ /tmp/nabi-ghp/ \
+  && git -C /tmp/nabi-ghp add -A && git -C /tmp/nabi-ghp commit -m "pages: …" && git -C /tmp/nabi-ghp push origin gh-pages \
+  && git worktree remove /tmp/nabi-ghp
+curl -sI https://kingcheee.github.io/nabi-core/ | head -1                                # 1～2분 뒤 반영
 ```
 
-경로 넷이 **한 도메인**이어야 한다 — 제출 칸에 링크를 하나만 적기 때문이다.
-N100이 죽으면 `/try`는 배너와 함께 기록만 보여주고, 나머지 세 경로는 영향이 없다.
+- 도메인을 사면: gh-pages 루트에 `CNAME` 파일(도메인 한 줄) + DNS `CNAME → kingcheee.github.io.` → 저장소 Settings → Pages에서 Enforce HTTPS. 제출 링크만 바꾸면 되고 사이트는 손댈 것 없다.
+- 체험 인스턴스를 살리려면(선택): 우리 기기의 `python3 -m web --demo`를 HTTPS로 노출하고 `/try`가 그 주소를 부르게 해야 한다 — GitHub Pages는 rewrite가 없어 **CORS + API 주소 설정**이 필요하다(미구현, 2026-09-16 기준). Vercel로 옮기면 `vercel.json` rewrite(`/try/api/:path*` → 인스턴스)로 CORS 없이 된다.
+- 시연 영상은 `assets/nabi-demo.mp4`(11MB, 같은 origin, `preload="none"`)와 포스터 `assets/nabi-demo-poster.jpg`. 유튜브 `https://youtu.be/Y4yoZT6KcuE`는 링크만 — 임베드(외부 스크립트) 안 한다.
 
 ## 손대기 전에
 
@@ -97,5 +104,5 @@ N100이 죽으면 `/try`는 배너와 함께 기록만 보여주고, 나머지 �
 - `try/recorded.json`은 손으로 고치지 않는다 — `python3 -m web.record`로만 만든다(지금은 이 노트북 값, N100이 오면 다시).
 - 제품 이름 「나비」는 잠정명이다. 요금 섹션은 넣되 가격은 적지 않는다(지우 결정 2026-09-11).
 - 저장소 링크는 공개 저장소 https://github.com/kingcheee/nabi-core 만 건다. 죽은 링크를 걸지 않는다.
-- 영상은 자리만 있다(랜딩·`/phone` 「촬영 예정」). 촬영되면 그 자리에 붙인다 — 외부 스크립트 없이(파일 직접 또는 링크).
+- 시연 영상(46초)은 랜딩 `#demo`에 같은 origin `<video>`로 붙어 있다(2026-09-16). 폰 터미널·폐PC(AVX1) 설치 영상은 아직 「촬영 예정」.
 - `tests/test_web.py`가 `/`·`/try`의 200과 `<h1>`을 본다 — 랜딩·앱에 `<h1>`은 남긴다.

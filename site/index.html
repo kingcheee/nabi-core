@@ -101,7 +101,8 @@
   .shot .bar i{width:10px;height:10px;border-radius:50%;background:var(--line-2);display:block}
   .shot .bar .url{margin-left:.6rem;flex:1;max-width:28rem;height:22px;border-radius:6px;background:#fff;border:1px solid var(--line);
                   font-size:.74rem;color:var(--muted);display:flex;align-items:center;padding:0 .6rem;font-family:var(--mono)}
-  .shot img{display:block;width:100%;height:auto}
+  .shot img,.shot video{display:block;width:100%;height:auto}
+  .demo-links{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin:.9rem 0 0;font-size:.9rem;color:var(--muted)}
 
   /* 문제 띠 */
   .problem{background:var(--ink);color:#e2e8f0}
@@ -227,7 +228,7 @@
   <div class="in">
     <a class="brand" href="./"><svg class="mark" aria-hidden="true"><use href="#i-logo"/></svg>나비</a>
     <nav aria-label="페이지 안">
-      <a href="#features">기능</a><a href="#how">작동 방식</a><a href="#measured">실측</a><a href="#devices">지원 기기</a><a href="#pricing">요금</a><a href="#faq">FAQ</a>
+      <a href="#demo">영상</a><a href="#features">기능</a><a href="#how">작동 방식</a><a href="#measured">실측</a><a href="#devices">지원 기기</a><a href="#pricing">요금</a><a href="#faq">FAQ</a>
     </nav>
     <div class="cta">
       <a class="btn btn-secondary" href="download/">설치기</a>
@@ -259,10 +260,28 @@
     <div class="wrap">
       <svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>
       <div>
-        <p>세무사·회계사는 고객 재무 정보에 <b>법적 비밀유지 의무</b>를 집니다(세무사법 제11조·제22조, 공인회계사법 제20조·제53조).
-        그래서 고객 서류를 ChatGPT에 넣을 수 없고, 온프레미스 AI 장비는 수천만 원입니다. 결국 「KakaoTalk_20260710.jpg」 「Scan_001.pdf」를 사람이 한 장씩 열어 정리합니다.</p>
+        <p>세무사사무소 직원 한 사람이 거래처 32.8곳을 맡습니다. 거래처가 보내는 통장내역 엑셀·수기 세금계산서 사진·임대차계약서·급여대장은 카카오톡과 이메일로 들어오고 파일명은 촬영 날짜뿐입니다.
+        세무사·회계사는 고객 재무 정보에 <b>법적 비밀유지 의무</b>를 집니다(세무사법 제11조·제22조, 공인회계사법 제20조). 그래서 고객 서류를 클라우드 AI에 넣을 수 없고, 온프레미스 AI 장비는 수천만 원입니다.
+        결국 「KakaoTalk_20260710.jpg」 「Scan_001.pdf」를 사람이 한 장씩 열어 정리합니다 — 회계 사무소 조사에서 업무 시간의 20～30%가 여기에 들어갑니다.</p>
         <small>나비는 이미 갖고 있거나 버리려던 PC에서 돕니다 — 서류는 기기를 떠나지 않습니다.</small>
       </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">시연 영상 · 46초</p>
+        <h2>인텔 N100 소형 PC 한 대가 서류 22건을 정리합니다</h2>
+        <p>실물 기기 → 대시보드 → 받은 서류함 → 확인 큐 → 정리된 서류 → 기기 화면 순서로, 이 사이트의 체험과 같은 화면을 그대로 녹화했습니다. 자막만 있고 소리는 없습니다.</p>
+      </div>
+      <figure class="shot" style="margin:0">
+        <video controls preload="none" playsinline muted width="1600" height="900" poster="assets/nabi-demo-poster.jpg" aria-label="나비 시연 영상 46초 — 실물 N100 소형 PC에서 서류 22건을 라벨링하고 확인 큐에서 승인해 표준 폴더로 정리하는 화면 녹화">
+          <source src="assets/nabi-demo.mp4" type="video/mp4">
+          이 브라우저는 동영상을 재생하지 못합니다. <a href="assets/nabi-demo.mp4">영상 파일 내려받기</a>
+        </video>
+      </figure>
+      <p class="demo-links"><span>같은 영상 유튜브: <a href="https://youtu.be/Y4yoZT6KcuE" rel="noopener">youtu.be/Y4yoZT6KcuE</a></span><span>화면을 직접 만져 보려면 <a href="try/">체험하기</a></span></p>
     </div>
   </section>
 
@@ -334,24 +353,27 @@
         <p>재지 못한 것은 「예정」, 조사로 잡은 기준은 「조사 기준」이라고 씁니다. 목표에 못 미치는 값도 고치지 않고 그대로 둡니다.</p>
       </div>
       <div class="grid grid-4" style="margin-bottom:1.25rem">
-        <div class="stat"><div class="l">노트북 (i7-10750H, 4스레드)</div><div class="n">18.7<small>초 / 건</small></div><div class="s">MiniCPM5-2B · 서류 5건 평균 · 2026-09-10</div></div>
-        <div class="stat"><div class="l">Galaxy A34 6GB 폐폰</div><div class="n">89.1<small>초 / 건</small></div><div class="s">MiniCPM5-2B · 8스레드 · 같은 서류 5건</div></div>
+        <div class="stat"><div class="l">노트북 (i7-10750H, 4스레드)</div><div class="n">17.5<small>초 / 건</small></div><div class="s">MiniCPM5-2B · 서류 22건 평균(최소 13.4 · 최대 22.8) · 2026-09-15</div></div>
+        <div class="stat"><div class="l">Galaxy A34 6GB 폐폰</div><div class="n">89.1<small>초 / 건</small></div><div class="s">MiniCPM5-2B · 8스레드 · 기기 비교 실측(같은 서류 5건) · 2026-09-10</div></div>
         <div class="stat"><div class="l">외부 API 호출</div><div class="n">0<small>건</small></div><div class="s">서류는 기기를 떠나지 않습니다</div></div>
         <div class="stat"><div class="l">샘플 서류</div><div class="n">22<small>건</small></div><div class="s">엑셀 · PDF · 한글 · 워드 · 스캔 · 팩스 · 카톡 사진 (7종 형식)</div></div>
       </div>
       <div class="table-wrap">
         <table class="data">
-          <thead><tr><th>정확도 — 서류 22건 (MiniCPM5-2B, 규칙 통과 후)</th><th class="n">텍스트 서류 14건</th><th class="n">스캔 · 팩스 · 사진 8건</th></tr></thead>
+          <thead><tr><th>정확도 — 서류 22건 (MiniCPM5-2B, 규칙 통과 후, 2026-09-15)</th><th class="n">텍스트 서류 14건</th><th class="n">스캔 · 팩스 · 사진 8건</th></tr></thead>
           <tbody>
-            <tr><td>거래처</td><td class="n">93%</td><td class="n">38%</td></tr>
-            <tr><td>서류 종류</td><td class="n">64%</td><td class="n">38%</td></tr>
-            <tr><td>기간</td><td class="n">86%</td><td class="n">50%</td></tr>
-            <tr><td><b>네 라벨 전부</b></td><td class="n"><b>57%</b></td><td class="n"><b>38%</b></td></tr>
+            <tr><td>거래처</td><td class="n">100%</td><td class="n">62%</td></tr>
+            <tr><td>분류</td><td class="n">71%</td><td class="n">62%</td></tr>
+            <tr><td>서류 종류</td><td class="n">57%</td><td class="n">62%</td></tr>
+            <tr><td>기간</td><td class="n">71%</td><td class="n">50%</td></tr>
+            <tr><td><b>네 라벨 전부</b></td><td class="n"><b>43%</b></td><td class="n"><b>50%</b></td></tr>
+            <tr><td>확정으로 내보냈는데 틀린 것 (자신 있는 오탐)</td><td class="n">2 / 5건</td><td class="n">0 / 2건</td></tr>
+            <tr><td>보류가 옳았던 비율</td><td class="n">6 / 9건</td><td class="n">4 / 6건</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="acc-note"><b>목표에 못 미치는 값이고, 고치지 않고 그대로 적었습니다.</b> 틀린 것의 대부분은 「보류」로 사람에게 넘어갑니다. 서류 종류를 가르는 단서를 프롬프트에 주는 개선을 시험하는 중이고, 샘플을 100건으로 늘려 다시 잽니다.
-      거래처 93%는 규칙엔진이 만든 값입니다 — 모델이 「한빚나루식당」이라고 내놓은 것을 등록 목록과 대조해 고쳐 붙였습니다. 출처 2026-09-10 실측.</p>
+      <p class="acc-note"><b>목표(텍스트 서류 종류 85% · 기간 90%)에 못 미치는 값이고, 고치지 않고 그대로 적었습니다.</b> 22건 중 확정 7건·보류 15건. 확정 7건 중 2건이 틀렸고, 보류 15건 중 10건은 보류가 옳았습니다.
+      거래처 100%는 규칙엔진이 만든 값입니다 — 모델이 「한빚나루식당」이라고 내놓은 것을 등록 목록과 대조해 「한빛나루식당」으로 고쳐 붙였습니다. 서류 종류가 제일 약합니다 — 본문의 「사업자등록번호」라는 글자에 낚여 사업자등록증으로 고르는 오류가 원인이고, 종류를 가르는 단서를 주는 개선을 시험하는 중입니다. 샘플을 100건으로 늘려 다시 잽니다. 출처 2026-09-15 실측(같은 서류 22건을 9월 10일에 잰 첫 값은 텍스트 57% · 스캔 38%였습니다).</p>
     </div>
   </section>
 
@@ -365,7 +387,7 @@
       <div class="grid grid-4">
         <div class="card dev"><svg class="ico" aria-hidden="true"><use href="#i-monitor"/></svg><h3>폐PC <span class="badge badge-ready">실측</span></h3>
           <p>2013년 이전 AVX1 CPU 포함 — 공식 llama.cpp 바이너리가 죽는 PC도 설치기가 맞는 빌드를 고릅니다.</p>
-          <div class="m">2020년 노트북 (i7-10750H) <b>18.7초 / 건</b></div></div>
+          <div class="m">2020년 노트북 (i7-10750H) <b>18.7초 / 건</b> <small>(기기 비교 실측, 서류 5건)</small></div></div>
         <div class="card dev"><svg class="ico" aria-hidden="true"><use href="#i-smartphone"/></svg><h3>폐폰 <span class="badge badge-ready">실측</span></h3>
           <p>RAM 6GB 이상 · 2019년 이후 칩셋 (조사 기준). 전원에 꽂아 두고 씁니다.</p>
           <div class="m">Galaxy A34 <b>89.1초</b> · Note 20 Ultra <b>81.0초</b> / 건</div></div>
@@ -424,7 +446,7 @@
         <details><summary>어떤 PC면 되나요?</summary>
           <p>CPU가 있으면 됩니다. GPU는 쓰지 않습니다. 설치기가 CPU 명령어(AVX1/AVX2/ARM)·RAM·코어 구성·메모리 대역폭을 재서 그 기기에 맞는 추론 엔진 빌드와 모델 크기(2B 기본)를 고릅니다. 우리가 실제로 돌린 가장 낮은 기기는 6GB Galaxy A34입니다.</p></details>
         <details><summary>정확도는 어느 정도인가요?</summary>
-          <p>위 실측표 그대로입니다 — 텍스트 서류 14건에서 네 라벨 전부 57%, 스캔·사진 8건에서 38%. 목표에 못 미치고, 그래서 확신이 낮으면 「보류」가 정식 출력입니다. 틀린 것의 대부분이 보류로 사람에게 넘어가고, 사람이 고친 수정은 별칭으로 규칙에 되돌아갑니다. 100건으로 다시 잽니다.</p></details>
+          <p>위 실측표 그대로입니다 — 2026-09-15 기준 텍스트 서류 14건에서 거래처 100% · 분류 71% · 서류 종류 57% · 기간 71%, 스캔·사진 8건에서 거래처 62% · 종류 62% · 기간 50%. 목표에 못 미치고, 그래서 확신이 낮으면 「보류」가 정식 출력입니다. 확정으로 내보낸 7건 중 2건이 틀렸고 보류 15건 중 10건은 보류가 옳았습니다. 사람이 고친 수정은 별칭으로 규칙에 되돌아갑니다. 100건으로 다시 잽니다.</p></details>
         <details><summary>왜 2B 모델인가요?</summary>
           <p>언어모델이 하는 일이 한 칸(본문을 읽고 4축 JSON)뿐이라 큰 모델이 필요 없고, 2B급이면 CPU만으로 서류 1건을 노트북에서 18.7초, 폐폰에서 1분 반 안에 읽습니다(실측). 판정과 경로는 규칙엔진이 하므로 모델이 틀려도 파일이 사라지지 않습니다. 우리가 잰 두 모델(MiniCPM5-2B · Qwen2.5-1.5B) 중 더 정확한 쪽을 기본으로 골랐습니다.</p></details>
       </div>
@@ -445,7 +467,8 @@
             <tr><td>모델</td><td>MiniCPM5-2B (기본) · Qwen2.5-1.5B-Instruct (저사양 후보) — Hugging Face 배포본</td><td>Apache-2.0</td></tr>
             <tr><td>OCR</td><td>Tesseract 5 + 한국어 데이터</td><td>Apache-2.0</td></tr>
             <tr><td>파서</td><td>PyMuPDF · openpyxl · python-docx · hwpx 파서</td><td>각 라이선스</td></tr>
-            <tr><td>우리 코드</td><td>설치기 · 라벨링 엔진 · 규칙엔진 · 확인 큐 · 이 화면 (파이썬 표준 라이브러리)</td><td>Apache-2.0 (공개 준비 중)</td></tr>
+            <tr><td>우리 코드</td><td>라벨링 엔진 · 규칙엔진 · 확인 큐 · 체험 서버 · 이 사이트 (파이썬 표준 라이브러리) — <a href="https://github.com/kingcheee/nabi-core" rel="noopener">github.com/kingcheee/nabi-core</a></td><td>Apache-2.0 (공개)</td></tr>
+            <tr><td>호스팅</td><td>이 사이트는 정적 파일 — GitHub Pages · 체험 인스턴스는 우리 기기에서 도는 파이썬 서버</td><td>—</td></tr>
             <tr><td>개발 도구</td><td>Claude Code · Antigravity (설계·구현·실측 자동화에 사용)</td><td>—</td></tr>
           </tbody>
         </table>
@@ -458,7 +481,7 @@
 <footer class="site-footer">
   <div class="wrap in">
     <a class="brand" href="./"><svg class="mark" aria-hidden="true"><use href="#i-logo"/></svg>나비</a>
-    <div class="links"><a href="try/">체험</a><a href="download/">설치기</a><a href="phone/">지원 기기 · 벤치마크</a><span>라이선스 Apache-2.0</span><span>2026 인공지능사관학교 파이널 팀</span></div>
+    <div class="links"><a href="try/">체험</a><a href="download/">설치기</a><a href="phone/">지원 기기 · 벤치마크</a><a href="https://github.com/kingcheee/nabi-core" rel="noopener">저장소 (Apache-2.0)</a><a href="https://youtu.be/Y4yoZT6KcuE" rel="noopener">시연 영상</a><span>2026 인공지능사관학교 파이널 팀</span></div>
     <p class="note">이 페이지는 정적 파일 하나입니다. 체험 인스턴스가 멈춰도 이 링크는 살아 있습니다. 외부 스크립트·웹폰트를 쓰지 않습니다.</p>
   </div>
 </footer>

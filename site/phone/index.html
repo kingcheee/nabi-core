@@ -182,10 +182,10 @@
       </div>
     </div>
 
-    <!-- 2 · 영상 자리 -->
+    <!-- 2 · 시연 영상 -->
     <div class="callout" style="margin:1.5rem 0 0">
-      <b>영상은 촬영 예정입니다.</b> 폰 터미널에서 서류 5장을 라벨링하는 30초 실측 영상과,
-      중고로 구한 폐PC에 설치기를 돌려 정리까지 가는 데모 영상이 여기와 소개 페이지에 붙습니다.
+      <b>시연 영상(46초)</b> — 인텔 N100 소형 PC 실물에서 시작해 서류 22건이 라벨링·승인·정리되는 화면 녹화입니다. <a href="../#demo">소개 페이지에서 재생</a> ·
+      <a href="https://youtu.be/Y4yoZT6KcuE" rel="noopener">유튜브</a>. 폰 터미널 실측 영상과 중고 폐PC(AVX1) 설치 영상은 촬영 예정입니다.
     </div>
   </section>
 
@@ -441,7 +441,7 @@ for c in /sys/devices/system/cpu/cpu[0-9]*; do
 taskset -c 4-7 llama-server -m MiniCPM5-2B-Q4_K_M.gguf --host 127.0.0.1 --port 8097 \
   -c 2048 -ub 128 -t 4 --no-warmup</pre>
     <p class="note" style="margin-top:0">스레드 수를 코어 개수보다 크게 주지 마세요 — 2코어에 4스레드를 몰아넣으면 생성이 무너집니다.
-    설치기는 이 판단을 자동으로 합니다. 실측 스크립트(같은 서류 5건 · 모델 두 개 · 온도 곡선)는 저장소 공개와 함께 여기에 붙습니다.</p>
+    설치기는 이 판단을 자동으로 합니다. 실측 스크립트(같은 서류 5건 · 모델 두 개 · 온도 곡선)와 결과 원본은 공개 저장소 <a href="https://github.com/kingcheee/nabi-core/tree/main/bench" rel="noopener">github.com/kingcheee/nabi-core</a>의 bench 폴더에 있습니다.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="../download/"><svg class="ico sm" aria-hidden="true"><use href="#i-download"/></svg>PC에는 설치기로</a>
       <a class="btn btn-secondary" href="../try/">체험하기</a>
